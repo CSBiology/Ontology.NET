@@ -26,6 +26,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{F9AB2DC2-AB2
 		build-and-test.yml = build-and-test.yml
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ControlledVocabulary", "src\ControlledVocabulary\ControlledVocabulary.fsproj", "{27679102-2E6D-4BD9-9DF4-FC101EA6487D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ontology.NET", "src\Ontology.NET\Ontology.NET.fsproj", "{6829EA97-1494-476C-B859-0DDA2ED76429}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,12 +40,22 @@ Global
 		{708F62D9-75D4-4D23-947E-6E7C8282EF3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{708F62D9-75D4-4D23-947E-6E7C8282EF3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{708F62D9-75D4-4D23-947E-6E7C8282EF3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27679102-2E6D-4BD9-9DF4-FC101EA6487D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27679102-2E6D-4BD9-9DF4-FC101EA6487D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27679102-2E6D-4BD9-9DF4-FC101EA6487D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27679102-2E6D-4BD9-9DF4-FC101EA6487D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6829EA97-1494-476C-B859-0DDA2ED76429}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6829EA97-1494-476C-B859-0DDA2ED76429}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6829EA97-1494-476C-B859-0DDA2ED76429}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6829EA97-1494-476C-B859-0DDA2ED76429}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{708F62D9-75D4-4D23-947E-6E7C8282EF3F} = {5F84260C-4280-4002-ADD3-952B7FCD230D}
+		{27679102-2E6D-4BD9-9DF4-FC101EA6487D} = {568A089F-72FE-4A48-BCE9-9BBC80C9123E}
+		{6829EA97-1494-476C-B859-0DDA2ED76429} = {568A089F-72FE-4A48-BCE9-9BBC80C9123E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EDF7C810-1000-4CC6-8559-CBEE2D6EBB1E}
