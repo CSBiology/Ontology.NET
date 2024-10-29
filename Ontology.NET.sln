@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{CE3D
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		global.json = global.json
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{F9AB2DC2-AB20-4AC2-A827-82819C82D4FA}"
