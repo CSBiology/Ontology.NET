@@ -1,0 +1,7 @@
+format-version: 1.0.0
+
+
+[Term]
+id: tof2:1
+name: term1_file2
+xref: tof1:1
