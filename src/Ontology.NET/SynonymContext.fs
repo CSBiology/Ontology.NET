@@ -27,7 +27,18 @@ module SynonymContext =
         synCont
 
 
+    let addSynonymsOfTerm sourceTerm targetTerms (synCont : SynonymContext) =
+
+        targetTerms
+        |> Seq.iter (
+            fun tt -> addPair sourceTerm tt synCont |> ignore
+        )
+
+        synCont
+
+
     let ofTermSynonymPairs (synonyms : (CvTerm * CvTerm) seq) =
+
         let synCont = SynonymContext()
         synonyms
         |> Seq.iter (
