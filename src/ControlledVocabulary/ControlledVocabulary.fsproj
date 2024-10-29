@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharpAux.Core" Version="[2.0.0]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="CvTerm.fs" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <Authors>Oliver Maus, Kevin Schneider, Heinrich Lukas Weil, Timo Muehlhaus, Kevin Frey</Authors>
+    <Description>A generic data model for representing controlled vocabularies</Description>
+    <Summary>A generic data model for representing controlled vocabularies</Summary>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!--<PackageIcon>logo.png</PackageIcon>-->
+    <PackageTags>F# FSharp datascience rdm arc dataplant nfdi4plants</PackageTags>
+    <RepositoryUrl>https://github.com/nfdi4plants/ArcGraphModel</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+</Project>
