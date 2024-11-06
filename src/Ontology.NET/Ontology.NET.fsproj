@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="OboTerm.fs" />
-    <Compile Include="OboParser.fs" />
+    <Compile Include="OBO\OboTerm.fs" />
+    <Compile Include="OBO\OboParser.fs" />
     <Compile Include="SynonymContext.fs" />
   </ItemGroup>
 
