@@ -11,10 +11,15 @@
 
   <ItemGroup>
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
+    <PackageReference Include="ARCtrl.Core" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="OBO\DBXref.fs" />
+    <Compile Include="OBO\TermSynonym.fs" />
     <Compile Include="OBO\OboTerm.fs" />
+    <Compile Include="OBO\OboTypeDef.fs" />
+    <Compile Include="OBO\OboOntology.fs" />
     <Compile Include="OBO\OboParser.fs" />
     <Compile Include="SynonymContext.fs" />
   </ItemGroup>
