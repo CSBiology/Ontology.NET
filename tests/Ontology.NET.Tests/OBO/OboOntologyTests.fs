@@ -52,9 +52,9 @@ module OboOntologyTests =
                     Name = "checkTerm1"
                 )
 
-            let testFile1Path = Path.Combine(__SOURCE_DIRECTORY__, "References", "CorrectHeaderTags.obo")
-            let testFile2Path = Path.Combine(__SOURCE_DIRECTORY__, "References", "IncorrectHeaderTags.obo")
-            let testFile3Path = Path.Combine(__SOURCE_DIRECTORY__, "References", "DuplicateHeaderTags.obo")
+            let testFile1Path = Path.Combine(__SOURCE_DIRECTORY__, "..", "References", "CorrectHeaderTags.obo")
+            let testFile2Path = Path.Combine(__SOURCE_DIRECTORY__, "..", "References", "IncorrectHeaderTags.obo")
+            let testFile3Path = Path.Combine(__SOURCE_DIRECTORY__, "..", "References", "DuplicateHeaderTags.obo")
             let testFile1 = try OboOntology.fromFile false testFile1Path |> Some with _ -> None
             let testFile2 = try OboOntology.fromFile false testFile2Path |> Some with _ -> None
             let testFile3 = try OboOntology.fromFile false testFile3Path |> Some with _ -> None
