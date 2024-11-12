@@ -12,6 +12,11 @@
     <None Include="References\CorrectHeaderTags.obo" />
     <None Include="References\DuplicateHeaderTags.obo" />
     <None Include="References\IncorrectHeaderTags.obo" />
+    <Compile Include="OBO\DBXrefTests.fs" />
+    <Compile Include="OBO\TermSynonymTests.fs" />
+    <Compile Include="OBO\OboTermTests.fs" />
+    <Compile Include="OBO\OboOntologyTests.fs" />
+    <Compile Include="OBO\Main.fs" />
   </ItemGroup>
 
   <ItemGroup>
