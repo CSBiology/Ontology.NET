@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="References\CorrectHeaderTags.obo" />
+    <None Include="References\DuplicateHeaderTags.obo" />
+    <None Include="References\IncorrectHeaderTags.obo" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Ontology.NET\Ontology.NET.fsproj" />
     <PackageReference Include="Expecto" Version="10.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
