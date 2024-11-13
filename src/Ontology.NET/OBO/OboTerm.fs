@@ -554,6 +554,10 @@ type OboTerm =
     static member toCvTerm (term : OboTerm) =
         term.ToCvTerm()
 
+    /// Creates an OboTerm from a CvTerm given.
+    static member ofCvTerm (cvTerm : CvTerm) =
+        OboTerm.Create(id = cvTerm.Accession, Name = cvTerm.Name)
+
 
 /// Representation of a the relation an OboTerm can have with other OboTerms.
 type TermRelation<'a> =
