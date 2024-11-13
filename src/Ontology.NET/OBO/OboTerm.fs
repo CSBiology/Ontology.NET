@@ -567,3 +567,10 @@ type TermRelation<'a> =
     | Target of Relation :'a * SourceTerm : OboTerm * TargetTerm : OboTerm
     /// Relation between one OboTerm with another OboTerm that is not defined in the OboOntology in the form of generic relation `'a` * source OboTerm.
     | TargetMissing of Relation :'a * SourceTerm : OboTerm
+
+
+module CvTerm =
+
+    /// Creates a CvTerm from a given OboTerm.
+    let ofOboTerm (oboTerm : OboTerm) =
+        oboTerm.ToCvTerm()
