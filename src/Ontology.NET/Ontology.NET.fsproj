@@ -21,7 +21,11 @@
     <Compile Include="OBO\OboTypeDef.fs" />
     <Compile Include="OBO\OboOntology.fs" />
     <Compile Include="OBO\OboParser.fs" />
+    <Compile Include="Relation.fs" />
+    <Compile Include="RelationExtensions.fs" />
+    <Compile Include="Ontology.fs" />
     <Compile Include="SynonymContext.fs" />
+    <Compile Include="Extensions.fs" />
   </ItemGroup>
 
   <PropertyGroup>
