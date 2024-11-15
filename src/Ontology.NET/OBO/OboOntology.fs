@@ -559,6 +559,29 @@ type OboOntology =
     static member returnAllEquivalentTerms (onto1 : OboOntology) onto2 =
         onto1.ReturnAllEquivalentTerms(onto2)
 
+    /// Returns all OboOntologies whose URLs are present as remarks in this OboOntology's header.
+    member this.LoadAllOntologies() =
+        let wc = new Net.WebClient()
+        let pattern = Text.RegularExpressions.Regex @"^(?<Name>[A-Za-z]+)_URL:\s(?<URL>https?:\/\/[^\s]+)$"
+        this.Remarks
+        |> Seq.choose (
+            fun r ->
+                let patternMatch = pattern.Match r
+                if patternMatch.Success then
+                    let name = patternMatch.Groups["Name"].Value
+                    let url = patternMatch.Groups["URL"].Value
+                    let targetOntology = 
+                        wc.DownloadString url
+                        |> String.split '\n'
+                        |> OboOntology.fromLines true
+                    Some (name, targetOntology)
+                else None
+        )
+
+    /// Returns all OboOntologies whose URLs are present as remarks in the given OboOntology's header.
+    static member loadAllOntologies (onto : OboOntology) =
+        onto.LoadAllOntologies()
+
 
 type OboTermDef = 
     {
