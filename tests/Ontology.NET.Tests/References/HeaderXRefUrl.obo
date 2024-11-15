@@ -1,0 +1,7 @@
+format-version: 0.0.1
+treat-xrefs-as-equivalent: CL 
+remark: CL_URL: https://raw.githubusercontent.com/obophenotype/cell-ontology/refs/heads/master/cl.obo
+
+[Term]
+id: Test:0001
+xref: CL:0000001
