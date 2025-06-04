@@ -44,6 +44,12 @@ type CvTerm =
             member this.CompareTo cvt =
                 compare this.Accession cvt.Accession
 
+        interface System.IComparable with
+            member this.CompareTo o =
+                match o with
+                | :? CvTerm as cvt -> compare this.Accession cvt.Accession
+                | _ -> raise (System.ArgumentException("Object must be of type CvTerm"))
+
 /// Represents a unit term from the unit ontology 
 /// in the form of: id|accession * name * refUri
 // ?Maybe [<Struct>]

@@ -62,6 +62,8 @@ let l2 = {Ak = 2; Ax = 3}
 
 l > l2
 
+(2).CompareTo a
+
 
 
 // ----
