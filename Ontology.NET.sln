@@ -31,6 +31,14 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ControlledVocabulary", "src
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ontology.NET", "src\Ontology.NET\Ontology.NET.fsproj", "{6829EA97-1494-476C-B859-0DDA2ED76429}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fixtures", "fixtures", "{DC031518-BD9C-4741-9A06-D1691848DE67}"
+	ProjectSection(SolutionItems) = preProject
+		tests\fixtures\testOboFile1.obo = tests\fixtures\testOboFile1.obo
+		tests\fixtures\testOboFile2.obo = tests\fixtures\testOboFile2.obo
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +65,7 @@ Global
 		{708F62D9-75D4-4D23-947E-6E7C8282EF3F} = {5F84260C-4280-4002-ADD3-952B7FCD230D}
 		{27679102-2E6D-4BD9-9DF4-FC101EA6487D} = {568A089F-72FE-4A48-BCE9-9BBC80C9123E}
 		{6829EA97-1494-476C-B859-0DDA2ED76429} = {568A089F-72FE-4A48-BCE9-9BBC80C9123E}
+		{DC031518-BD9C-4741-9A06-D1691848DE67} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EDF7C810-1000-4CC6-8559-CBEE2D6EBB1E}
