@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ControlledVocabulary\ControlledVocabulary.fsproj" />
+    <ProjectReference Include="..\Ontology.NET\Ontology.NET.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ARCtrl.Core" Version="[2.5.1]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="OBO\OboTermExtensions.fs" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <Authors>Heinrich Lukas Weil, Oliver Maus, F# open source contributors</Authors>
+    <Description>A library to work with ontologies and ontology-related file formats.</Description>
+    <Summary>A library to work with ontologies and ontology-related file formats.</Summary>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>ontology parser obo</PackageTags>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+</Project>
