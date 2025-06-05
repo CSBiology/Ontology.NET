@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Include="OBO\OboTermExtensions.fs" />
+    <Compile Include="OBO\OboOntologyExtensions.fs" />
   </ItemGroup>
 
   <PropertyGroup>
