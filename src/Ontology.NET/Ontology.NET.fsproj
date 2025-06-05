@@ -17,6 +17,7 @@
     <Compile Include="OBO\DBXRef.fs" />
     <Compile Include="OBO\TermSynonym.fs" />
     <Compile Include="OBO\OboTerm.fs" />
+    <Compile Include="OBO\OboTypedef.fs" />
     <Compile Include="OBO\OboParser.fs" />
     <Compile Include="GenericOntology.fs" />
     <Compile Include="SynonymContext.fs" />
