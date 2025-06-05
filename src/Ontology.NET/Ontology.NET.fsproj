@@ -18,6 +18,8 @@
     <Compile Include="OBO\TermSynonym.fs" />
     <Compile Include="OBO\OboTerm.fs" />
     <Compile Include="OBO\OboTypedef.fs" />
+    <Compile Include="OBO\OboEntry.fs" />
+    <Compile Include="OBO\OboEntries.fs" />
     <Compile Include="OBO\OboParser.fs" />
     <Compile Include="GenericOntology.fs" />
     <Compile Include="SynonymContext.fs" />
