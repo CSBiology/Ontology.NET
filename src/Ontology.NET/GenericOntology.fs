@@ -18,7 +18,7 @@ type GenericOntology() =
         |> List.iter (
             fun ot ->
                 let rels =
-                    ot.
+                    ot.Xrefs
         )
         let cvts, rels =
             obo.Terms

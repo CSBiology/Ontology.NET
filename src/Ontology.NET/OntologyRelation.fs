@@ -21,3 +21,16 @@ type OntologyRelation = {
         RelationType    = relationType
         Target          = targetTerm
     }
+
+
+/// Collection of the most important relations from Relation Ontology (RO).
+module Relations =
+
+    let isA =
+        CvTerm.create("", "is a", "")
+
+    let hasA =
+        CvTerm.create("", "has a", "")
+
+    let partOf =
+        CvTerm.create("BFO:0000050", "part of", "RO")   // BEWARE! It's BFO:00000050 but it's located in the RO. Wanna know why? Read here: https://github.com/BFO-ontology/BFO/issues/218
