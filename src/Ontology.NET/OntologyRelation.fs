@@ -34,3 +34,6 @@ module Relations =
 
     let partOf =
         CvTerm.create("BFO:0000050", "part of", "RO")   // BEWARE! It's BFO:00000050 but it's located in the RO. Wanna know why? Read here: https://github.com/BFO-ontology/BFO/issues/218
+
+    let xref =
+        CvTerm.create("", "xref", "")
