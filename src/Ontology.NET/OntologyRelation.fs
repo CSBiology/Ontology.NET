@@ -6,6 +6,8 @@ open ControlledVocabulary
 
 /// Model for a generic type of relation in an ontology. The relation can be of type CvTerm when defined (recommended) or string when not defined.
 type RelationType =
+    | IsA
+    | Xref
     | Term of CvTerm
     | Custom of string
 
@@ -26,14 +28,8 @@ type OntologyRelation = {
 /// Collection of the most important relations from Relation Ontology (RO).
 module Relations =
 
-    let isA =
-        CvTerm.create("", "is a", "")
-
-    let hasA =
-        CvTerm.create("", "has a", "")
-
     let partOf =
         CvTerm.create("BFO:0000050", "part of", "RO")   // BEWARE! It's BFO:00000050 but it's located in the RO. Wanna know why? Read here: https://github.com/BFO-ontology/BFO/issues/218
 
-    let xref =
-        CvTerm.create("", "xref", "")
+    let hasPart =
+        CvTerm.create("BFO:0000051", "has part", "RO")  // same as with part_of.
