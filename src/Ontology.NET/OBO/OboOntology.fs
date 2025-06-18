@@ -232,12 +232,16 @@ type OboOntology =
     member this.ToFile(path : string) =
         OboOntology.toFile path this
 
-    /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID.
+    /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID if it exists. Else returns None.
     member this.TryGetTerm(id : string) = 
         this.Terms
         |> List.tryFind (fun t ->
             t.Id = id
         )
+
+    /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID if it exists in the given OboOntology. Else returns None.
+    static member tryGetTerm id (onto : OboOntology) =
+        onto.TryGetTerm id
 
     /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID.
     member this.GetTerm(id : string) = 
@@ -246,6 +250,10 @@ type OboOntology =
             t.Id = id
         )
 
+    /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID in the given OboOntology.
+    static member getTerm id (onto : OboOntology) =
+        onto.GetTerm id
+
     /// Finds OBO term by its free text name if it exists. Else returns None.
     member this.TryGetTermByName(name : string) = 
         this.Terms
@@ -253,12 +261,40 @@ type OboOntology =
             t.Name = name
         )
 
+    /// Finds OBO term by its free text name if it exists in the given OboOntology. Else returns None.
+    static member tryGetTermByName name (onto : OboOntology) =
+        onto.TryGetTermByName name
+
     /// Finds OBO term by its free text name.
     member this.GetTermByName(name : string) = 
         this.Terms
         |> List.find (fun t ->
             t.Name = name
         )
+
+    /// Finds OBO term by its free text name in the given OboOntology.
+    static member getTermByName name (onto : OboOntology) =
+        onto.GetTermByName name
+
+    /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID if it exists. Else creates a new OBO term with the given ID and all else fields empty.
+    member this.GetOrCreateTerm(id) =
+        match this.TryGetTerm id with
+        | Some t -> t
+        | None -> OboTerm.Create id
+
+    /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID if it exists in the given OboOntology. Else creates a new OBO term with the given ID and all else fields empty.
+    static member getOrCreateTerm id (onto : OboOntology) =
+        onto.GetOrCreateTerm id
+
+    /// Finds OBO term by its free text name if it exists. Else creates a new OBO term with the given name, ID = "<missing>" and all else fields empty.
+    member this.GetOrCreateTermByName(name) =
+        match this.TryGetTermByName name with
+        | Some t -> t
+        | None -> OboTerm.Create("<missing>", Name = name)
+
+    /// Finds OBO term by its free text name if it exists in the given OboOntology. Else creates a new OBO term with the given name, ID = "<missing>" and all else fields empty.
+    static member getOrCreateTermByName name (onto : OboOntology) =
+        onto.GetOrCreateTermByName name
 
     /// Takes an OboTerm and returns all related terms in this ontology as a triple of input term, relationship, and related term.
     member this.GetRelatedTerms(term : OboTerm) =
