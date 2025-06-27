@@ -22,7 +22,7 @@
     <Compile Include="OBO\OboEntries.fs" />
     <Compile Include="OBO\OboOntology.fs" />
     <Compile Include="OntologyRelation.fs" />
-    <Compile Include="GenericOntology.fs" />
+    <Compile Include="OntologyDictionary.fs" />
     <Compile Include="SynonymContext.fs" />
     <Compile Include="DBContext.fs" />
   </ItemGroup>
