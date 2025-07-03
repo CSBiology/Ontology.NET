@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="FSharpAux" Version="[2.0.0]" />
-    <PackageReference Include="Graphoscope" Version="[0.6.0-preview.1]"/>
+    <PackageReference Include="Graphoscope" Version="[0.6.0-preview.1]" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,8 +24,6 @@
     <Compile Include="OBO\OboOntology.fs" />
     <Compile Include="OntologyRelation.fs" />
     <Compile Include="Ontology.fs" />
-    <Compile Include="SynonymContext.fs" />
-    <Compile Include="DBContext.fs" />
   </ItemGroup>
 
   <PropertyGroup>
