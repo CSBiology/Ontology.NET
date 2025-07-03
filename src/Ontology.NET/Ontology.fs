@@ -3,11 +3,12 @@
 
 open ControlledVocabulary
 open Ontology.NET.OBO
+open Graphoscope
 
 open System.Collections.Generic
 
 
-type OntologyDictionary() =
+type Ontology() =
 
     inherit Dictionary<CvTerm,OntologyRelation Set>()
 
