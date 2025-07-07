@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="GraphoscopeAux.fs" />
     <Compile Include="OBO\DBXRef.fs" />
     <Compile Include="OBO\TermSynonym.fs" />
     <Compile Include="OBO\OboTerm.fs" />
