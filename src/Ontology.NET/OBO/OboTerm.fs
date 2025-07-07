@@ -6,7 +6,6 @@ open TermSynonym
 
 open System
 
-open ARCtrl
 open ControlledVocabulary
 open FSharpAux
 
