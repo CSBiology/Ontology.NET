@@ -2,8 +2,10 @@
 
 
 open ControlledVocabulary
-open Ontology.NET.OBO
 open Graphoscope
+
+open GraphoscopeAux
+open Ontology.NET.OBO
 
 
 module internal OntologyGraphHelpers =
@@ -107,3 +109,25 @@ type Ontology() =
     /// Returns the terms (as CvTerms) of all terms that have an Xref relation to the given term with the given Ontology.
     static member getXrefsAsTerms termId (onto : Ontology) =
         onto.GetXrefsAsTerms termId
+
+    /// <summary>
+    /// Returns all terms that are transitively related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="predicate">A function that takes the current term ID, the corresponding CvTerm, and its outgoing relations, and returns a boolean indicating whether traversal should follow that term.</param>
+    /// <returns>A sequence of term IDs representing all related terms reachable by recursively following valid relations as defined by the predicate.</returns>
+    member this.GetRelatedTermsBy(termID, predicate) =
+        Algorithms.DFS.ofFGraphBy termID predicate this
+
+    /// <summary>Takes a term ID, a predicate function and an Ontology, and returns all related terms where predicate returned true.</summary>
+    /// <param name="predicate">Function that takes a term ID, a CvTerm and a RelationType Set and returns bool.</param>
+    static member getRelatedTermsBy termID predicate (onto : Ontology) =
+        onto.GetRelatedTermsBy(termID, predicate)
+
+    /// <summary>
+    /// Returns all terms that are transitively related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <returns>A sequence of term IDs representing all related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
+    member this.GetRelatedTermsWithDepth(termID, depth) =
+        Algorithms.DFS.ofFGraphWithDepth termID depth this
