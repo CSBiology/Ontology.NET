@@ -79,3 +79,31 @@ type Ontology() =
         )
 
         onto
+
+    /// Returns the term IDs of all terms that have an Xref relation to the given term.
+    member this.GetXrefs termId =
+        FContext.neighbours this[termId]
+        |> Seq.choose (
+            fun (targetNodeKey,relationTypes) ->
+                if Set.contains Xref relationTypes then
+                    Some targetNodeKey
+                else None
+        )
+
+    /// Returns the term IDs of all terms that have an Xref relation to the given term with the given Ontology.
+    static member getXrefs termId (onto : Ontology) =
+        onto.GetXrefs termId
+
+    /// Returns the terms (as CvTerms) of all terms that have an Xref relation to the given term.
+    member this.GetXrefsAsTerms termId =
+        FContext.neighbours this[termId]
+        |> Seq.choose (
+            fun (targetNodeKey,relationTypes) ->
+                if Set.contains Xref relationTypes then
+                    Some (FGraph.getNodeLabel this targetNodeKey)
+                else None
+        )
+
+    /// Returns the terms (as CvTerms) of all terms that have an Xref relation to the given term with the given Ontology.
+    static member getXrefsAsTerms termId (onto : Ontology) =
+        onto.GetXrefsAsTerms termId
