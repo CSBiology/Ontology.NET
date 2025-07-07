@@ -15,6 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="typeproviderdeps\ProvidedTypes.fsi" />
+    <Compile Include="TypeProviderDeps\ProvidedTypes.fs" />
     <Compile Include="GraphoscopeAux.fs" />
     <Compile Include="OBO\DBXRef.fs" />
     <Compile Include="OBO\TermSynonym.fs" />
@@ -23,6 +25,7 @@
     <Compile Include="OBO\OboEntry.fs" />
     <Compile Include="OBO\OboEntries.fs" />
     <Compile Include="OBO\OboOntology.fs" />
+    <Compile Include="OBO\OboProvider.fs" />
     <Compile Include="OntologyRelation.fs" />
     <Compile Include="Ontology.fs" />
   </ItemGroup>
