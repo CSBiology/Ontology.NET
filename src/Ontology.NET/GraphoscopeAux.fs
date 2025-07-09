@@ -10,6 +10,7 @@ module Algorithms =
 
     module DFS =
 
+        // leftover until a new Graphoscope NuGet release is dropped
         let ofFGraph (starting : 'NodeKey) (graph : FGraph<'NodeKey, 'NodeData, 'EdgeData>) =
             let visited = HashSet<'NodeKey>()
             let stack = Stack<'NodeKey>()
@@ -30,6 +31,7 @@ module Algorithms =
             }
 
 
+        // leftover until a new Graphoscope NuGet release is dropped
         let ofFGraphBy (starting : 'NodeKey) (predicate : 'NodeKey -> 'NodeData -> 'EdgeData -> bool) (graph : FGraph<'NodeKey, 'NodeData, 'EdgeData>) =
             let visited = HashSet<'NodeKey>()
             let stack = Stack<'NodeKey>()
@@ -51,6 +53,7 @@ module Algorithms =
             }
 
 
+        // leftover until a new Graphoscope NuGet release is dropped
         let ofFGraphWithDepth (starting : 'NodeKey) depth (graph : FGraph<'NodeKey, 'NodeData, 'EdgeData>) =
             let visited = HashSet<'NodeKey>()
             let stack = Stack<'NodeKey * int>()
@@ -68,6 +71,133 @@ module Algorithms =
                         for kv in s do
                             if not (visited.Contains(kv.Key)) then
                                 stack.Push(kv.Key, currDepth + 1)
+                                visited.Add(kv.Key) |> ignore
+            }
+
+        // leftover until a new Graphoscope NuGet release is dropped
+        let ofFGraphWithDepthBy (starting : 'NodeKey) depth (predicate : 'NodeKey -> 'NodeData -> 'EdgeData -> bool) (graph : FGraph<'NodeKey, 'NodeData, 'EdgeData>) =
+            let visited = HashSet<'NodeKey>()
+            let stack = Stack<'NodeKey * int>()
+
+            stack.Push(starting,0)
+            visited.Add(starting) |> ignore
+
+            seq {
+                while stack.Count > 0 do
+                    let nodeKey, currDepth = stack.Pop()
+                    let (_, nd, s) = graph.[nodeKey]
+                    yield (nodeKey, nd)
+
+                    if currDepth < depth then
+                        for kv in s do
+                            let _, ndSuccessor, _ = graph[kv.Key]
+                            if not( visited.Contains(kv.Key)) && predicate kv.Key ndSuccessor s[kv.Key] then
+                                stack.Push(kv.Key, currDepth + 1)
+                                visited.Add(kv.Key) |> ignore
+            }
+
+
+        /// Neighbour-based DFS (instead of only Successor-based).
+        let ofFGraphN (starting : 'NodeKey) (graph : FGraph<'NodeKey, 'NodeData, 'EdgeData>) =
+            let visited = HashSet<'NodeKey>()
+            let stack = Stack<'NodeKey>()
+
+            stack.Push(starting)
+            visited.Add(starting) |> ignore
+
+            seq {
+                while stack.Count > 0 do
+                    let nodeKey = stack.Pop()
+                    let (p, nd, s) = graph.[nodeKey]
+                    yield (nodeKey, nd)
+
+                    for kv in p do
+                        if not(visited.Contains(kv.Key)) then
+                            stack.Push(kv.Key)
+                            visited.Add(kv.Key) |> ignore
+
+                    for kv in s do
+                        if not(visited.Contains(kv.Key)) then
+                            stack.Push(kv.Key)
+                            visited.Add(kv.Key) |> ignore
+            }
+
+        /// Neighbour-based DFS (instead of only Successor-based) with predicate.
+        let ofFGraphNBy (starting : 'NodeKey) (predicate : 'NodeKey -> 'NodeData -> 'EdgeData -> bool) (graph : FGraph<'NodeKey, 'NodeData, 'EdgeData>) =
+            let visited = HashSet<'NodeKey>()
+            let stack = Stack<'NodeKey>()
+
+            stack.Push(starting)
+            visited.Add(starting) |> ignore
+
+            seq {
+                while stack.Count > 0 do
+                    let nodeKey = stack.Pop()
+                    let (p, nd, s) = graph.[nodeKey]
+                    yield (nodeKey, nd)
+
+                    for kv in p do
+                        let _,ndPred,_ = graph[kv.Key]
+                        if not(visited.Contains(kv.Key)) && predicate kv.Key ndPred p[kv.Key] then
+                            stack.Push(kv.Key)
+                            visited.Add(kv.Key) |> ignore
+
+                    for kv in s do
+                        let _,ndSucc,_ = graph[kv.Key]
+                        if not(visited.Contains(kv.Key)) && predicate kv.Key ndSucc s[kv.Key] then
+                            stack.Push(kv.Key)
+                            visited.Add(kv.Key) |> ignore
+            }
+
+        /// Neighbour-based DFS (instead of only Successor-based) with depth.
+        let ofFGraphNWithDepth (starting : 'NodeKey) depth (graph : FGraph<'NodeKey, 'NodeData, 'EdgeData>) =
+            let visited = HashSet<'NodeKey>()
+            let stack = Stack<'NodeKey * int>()
+
+            stack.Push(starting, 0)
+            visited.Add(starting) |> ignore
+
+            seq {
+                while stack.Count > 0 do
+                    let nodeKey,currDepth = stack.Pop()
+                    let (p, nd, s) = graph.[nodeKey]
+                    yield (nodeKey, nd)
+
+                    if currDepth < depth then
+                        for kv in p do
+                            if not(visited.Contains(kv.Key)) && currDepth < depth then
+                                stack.Push(kv.Key, currDepth + 1)
+                                visited.Add(kv.Key) |> ignore
+
+                        for kv in s do
+                            if not(visited.Contains(kv.Key)) && currDepth < depth then
+                                stack.Push(kv.Key, currDepth + 1)
+                                visited.Add(kv.Key) |> ignore
+            }
+
+        /// Neighbour-based DFS (instead of only Successor-based) with depth and predicate.
+        let ofFGraphNWithDepthBy (starting : 'NodeKey) depth (predicate : 'NodeKey -> 'NodeData -> 'EdgeData -> bool) (graph : FGraph<'NodeKey, 'NodeData, 'EdgeData>) =
+            let visited = HashSet<'NodeKey>()
+            let stack = Stack<'NodeKey * int>()
+
+            stack.Push(starting, 0)
+            visited.Add(starting) |> ignore
+
+            seq {
+                while stack.Count > 0 do
+                    let nodeKey = stack.Pop()
+                    let (p, nd, s) = graph.[nodeKey]
+                    yield (nodeKey, nd)
+
+                    if currDepth < depth then
+                        for kv in p do
+                            if not(visited.Contains(kv.Key)) then
+                                stack.Push(kv.Key)
+                                visited.Add(kv.Key) |> ignore
+
+                        for kv in s do
+                            if not(visited.Contains(kv.Key)) then
+                                stack.Push(kv.Key)
                                 visited.Add(kv.Key) |> ignore
             }
 
