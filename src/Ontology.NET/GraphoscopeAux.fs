@@ -185,19 +185,19 @@ module Algorithms =
 
             seq {
                 while stack.Count > 0 do
-                    let nodeKey = stack.Pop()
+                    let nodeKey, currDepth = stack.Pop()
                     let (p, nd, s) = graph.[nodeKey]
                     yield (nodeKey, nd)
 
                     if currDepth < depth then
                         for kv in p do
                             if not(visited.Contains(kv.Key)) then
-                                stack.Push(kv.Key)
+                                stack.Push(kv.Key, currDepth + 1)
                                 visited.Add(kv.Key) |> ignore
 
                         for kv in s do
                             if not(visited.Contains(kv.Key)) then
-                                stack.Push(kv.Key)
+                                stack.Push(kv.Key, currDepth + 1)
                                 visited.Add(kv.Key) |> ignore
             }
 

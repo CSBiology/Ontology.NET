@@ -87,13 +87,45 @@ type Ontology() =
 
     /// Returns the term IDs of all terms that have an Xref relation to the given term.
     member this.GetXrefs termId =
-        FContext.neighbours this[termId]
-        |> Seq.choose (
-            fun (targetNodeKey,relationTypes) ->
-                if Set.contains Xref relationTypes then
-                    Some targetNodeKey
-                else None
-        )
+        let rec loop newTermId outputList =
+            let xrefs = 
+                FContext.neighbours this[newTermId] 
+                |> Seq.choose (
+                    fun (targetNodeKey,relationTypes) -> 
+                        if Set.contains Xref relationTypes then
+                            Some targetNodeKey
+                        else None
+                )
+            xrefs
+            |> Seq.collect (
+                fun xref ->
+                    loop xref (xrefs :: outputList)
+            )
+            //if Seq.isEmpty xrefs |> not then
+            //    Seq.concat [xrefs; (yield! xrefs |> Seq.map loop)]
+            //else xrefs
+            //seq {
+            //    for (targetNodeKey,relationType) in nbs do
+            //        if Set.contains Xref relationType then
+            //            loop targetNodeKey
+            //        else targetNodeKey
+            //}
+            //nbs
+            //|> Seq.choose (
+            //    fun (targetNodeKey,relationTypes) ->
+            //        if Set.contains Xref relationTypes then
+            //            yield! (loop targetNodeKey)
+            //            //Some targetNodeKey
+            //        else None
+            //)
+        loop termId []
+        //FContext.neighbours this[termId]
+        //|> Seq.choose (
+        //    fun (targetNodeKey,relationTypes) ->
+        //        if Set.contains Xref relationTypes then
+        //            Some targetNodeKey
+        //        else None
+        //)
 
     /// Returns the term IDs of all terms that have an Xref relation to the given term with the given Ontology.
     static member getXrefs termId (onto : Ontology) =
