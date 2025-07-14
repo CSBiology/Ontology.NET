@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="OBO\References\CorrectHeaderTags.obo" />
+    <None Include="OBO\References\DuplicateHeaderTags.obo" />
+    <None Include="OBO\References\go.obo" />
+    <None Include="OBO\References\IncorrectHeaderTags.obo" />
     <Compile Include="OBO\TermSynonym.Tests.fs" />
     <Compile Include="OBO\OboTerm.Tests.fs" />
     <Compile Include="OBO\OboOntology.Tests.fs" />
@@ -28,8 +32,6 @@
     <Compile Include="Main.fs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="OBO\References\" />
-  </ItemGroup>
+  <ItemGroup />
 
 </Project>
