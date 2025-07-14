@@ -1,6 +1,8 @@
 ﻿namespace Ontology.NET
 
 
+open System.Collections.Generic
+
 open ControlledVocabulary
 open Graphoscope
 
@@ -10,22 +12,26 @@ open Ontology.NET.OBO
 
 module internal OntologyGraphHelpers =
 
-    let setOrAddEdge sourceTerm searchedTermKey (relationType : RelationType) onto graph =
-        let cvtTarget = OboOntology.getOrCreateTerm searchedTermKey onto |> OboTerm.toCvTerm
+    let setOrAddEdgeObo sourceTerm searchedTermKey (relationType : RelationType) oboOnto graph =
+        let cvtTarget = OboOntology.getOrCreateTerm searchedTermKey oboOnto |> OboTerm.toCvTerm
         if FGraph.containsNode cvtTarget.Accession graph then
-            printfn $"Node exists: {cvtTarget.Accession}"
             match FGraph.tryFindEdge sourceTerm.Accession cvtTarget.Accession graph with
             | Some (nk1,nk2,alreadyExistingEdge) -> 
-                printfn $"Edge exists: {alreadyExistingEdge}"
                 FGraph.setEdgeData sourceTerm.Accession cvtTarget.Accession (Set.add relationType alreadyExistingEdge) graph
             | None -> 
-                printfn "Edge exists not"
                 FGraph.addEdge sourceTerm.Accession cvtTarget.Accession (Set (List.singleton relationType)) graph
             |> ignore
         else 
-            printfn $"Node exists not: {cvtTarget.Accession}"
             let missingTargetTerm = CvTerm.create(searchedTermKey, "<missing>", "<missing>")
             FGraph.addElement sourceTerm.Accession sourceTerm missingTargetTerm.Accession missingTargetTerm (Set (List.singleton relationType)) graph |> ignore
+
+    // CAUTION: fails if one of the terms doesn't exist in the given Ontology!
+    let setOrAddEdge sourceTerm targetTerm (relation : RelationType) onto =
+        match FGraph.tryFindEdge sourceTerm targetTerm onto with
+        | Some (_, _, edgeData) ->
+            FGraph.setEdgeData sourceTerm targetTerm (Set.add relation edgeData) onto
+        | None -> 
+            FGraph.addEdge sourceTerm targetTerm (Set.singleton relation) onto
 
 
 open OntologyGraphHelpers
@@ -61,14 +67,14 @@ type Ontology() =
                 oboTerm.IsA
                 |> List.iter (
                     fun isATerm ->
-                        setOrAddEdge cvtSource isATerm IsA oboOnto onto
+                        setOrAddEdgeObo cvtSource isATerm IsA oboOnto onto
                 )
 
                 // Add xref relations
                 oboTerm.Xrefs
                 |> List.iter (
                     fun xref ->
-                        setOrAddEdge cvtSource xref.Name Xref oboOnto onto
+                        setOrAddEdgeObo cvtSource xref.Name Xref oboOnto onto
                 )
 
                 // Add relationships
@@ -76,56 +82,75 @@ type Ontology() =
                 |> List.iter (
                     fun relShip ->
                         let relShipName, relShipTermId = OboTerm.deconstructRelationship relShip
-                        setOrAddEdge cvtSource relShipTermId (Custom relShipName) oboOnto onto
+                        setOrAddEdgeObo cvtSource relShipTermId (Custom relShipName) oboOnto onto
                 )
         )
 
         onto
 
 
+    // Basic functionality:
+
+    /// <summary>
+    /// Adds a CvTerm to the Ontology.
+    /// </summary>
+    /// <param name="term">The CvTerm that gets added to the Ontology.</param>
+    member this.AddTerm(term : CvTerm) =
+        FGraph.addNode term.Accession term this :?> Ontology
+
+    /// <summary>
+    /// Adds a relation of source term to target term to the Ontology.
+    /// </summary>
+    /// <param name="sourceTerm">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTerm">The ID of the term that is related to the source term.</param>
+    /// <param name="relation">The relation between both terms.</param>
+    /// <exception
+    member this.AddRelation(sourceTerm, targetTerm, relation) =
+        match FGraph.containsNode sourceTerm this, FGraph.containsNode targetTerm this with
+        | true, true -> 
+            setOrAddEdge sourceTerm targetTerm relation this :?> Ontology
+        | false, true ->
+            raise (System.ArgumentException($"source term {sourceTerm} does not exist in the Ontology.", sourceTerm))
+        | true, false ->
+            raise (System.ArgumentException($"target term {targetTerm} does not exist in the Ontology.", targetTerm))
+        | false, false ->
+            raise (System.ArgumentException($"terms {sourceTerm} and {targetTerm} do not exist in the Ontology."))
+
+    /// <summary>
+    /// Removes the given term from the Ontology. Also removes all of its relations.
+    /// </summary>
+    /// <param name="term">The ID of the term that gets removed.</param>
+    member this.RemoveTerm(term) =
+        FGraph.removeNode term this :?> Ontology
+
+
     // Xref functionality:
 
     /// Returns the term IDs of all terms that have an Xref relation to the given term.
     member this.GetXrefs termId =
-        let rec loop newTermId outputList =
-            let xrefs = 
-                FContext.neighbours this[newTermId] 
-                |> Seq.choose (
-                    fun (targetNodeKey,relationTypes) -> 
-                        if Set.contains Xref relationTypes then
-                            Some targetNodeKey
-                        else None
-                )
-            xrefs
-            |> Seq.collect (
-                fun xref ->
-                    loop xref (xrefs :: outputList)
-            )
-            //if Seq.isEmpty xrefs |> not then
-            //    Seq.concat [xrefs; (yield! xrefs |> Seq.map loop)]
-            //else xrefs
-            //seq {
-            //    for (targetNodeKey,relationType) in nbs do
-            //        if Set.contains Xref relationType then
-            //            loop targetNodeKey
-            //        else targetNodeKey
-            //}
-            //nbs
-            //|> Seq.choose (
-            //    fun (targetNodeKey,relationTypes) ->
-            //        if Set.contains Xref relationTypes then
-            //            yield! (loop targetNodeKey)
-            //            //Some targetNodeKey
-            //        else None
-            //)
-        loop termId []
-        //FContext.neighbours this[termId]
-        //|> Seq.choose (
-        //    fun (targetNodeKey,relationTypes) ->
-        //        if Set.contains Xref relationTypes then
-        //            Some targetNodeKey
-        //        else None
-        //)
+        let visited = HashSet()
+        let stack = Stack()
+
+        stack.Push(termId)
+        visited.Add(termId) |> ignore
+
+        seq {
+            while stack.Count > 0 do
+                let nodeKey = stack.Pop()
+                let (a, nd, d) = this[nodeKey]
+                if nodeKey <> termId then 
+                    yield nodeKey
+
+                for kv in a do
+                    if not(visited.Contains(kv.Key)) && Set.contains Xref a[kv.Key] then
+                        stack.Push(kv.Key)
+                        visited.Add(kv.Key) |> ignore
+
+                for kv in d do
+                    if not(visited.Contains(kv.Key)) && Set.contains Xref d[kv.Key] then
+                        stack.Push(kv.Key)
+                        visited.Add(kv.Key) |> ignore
+        }
 
     /// Returns the term IDs of all terms that have an Xref relation to the given term with the given Ontology.
     static member getXrefs termId (onto : Ontology) =
@@ -191,7 +216,7 @@ type Ontology() =
 
     // Source relation functionality:
 
-    member this.GetSourceTermsBy(termID, predicate) =
+    //member this.GetSourceTermsBy(termID, predicate) =
         
 
 
