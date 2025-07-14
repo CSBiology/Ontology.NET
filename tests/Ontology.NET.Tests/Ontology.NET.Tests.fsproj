@@ -23,7 +23,13 @@
     <Compile Include="OBO\OboTerm.Tests.fs" />
     <Compile Include="OBO\OboOntology.Tests.fs" />
     <Compile Include="OBO\OboTypeProvider.Tests.fs" />
+    <Compile Include="ReferenceObjects.fs" />
+    <Compile Include="Ontology.Tests.fs" />
     <Compile Include="Main.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="OBO\References\" />
   </ItemGroup>
 
 </Project>
