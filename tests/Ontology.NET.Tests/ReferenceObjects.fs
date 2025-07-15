@@ -30,3 +30,20 @@ module ReferenceObjects =
         |> List.iter (fun (st,tt,e) -> FGraph.addEdge st tt e onto |> ignore)
 
         onto
+
+    let testOnto2 =
+        let onto = Ontology()
+
+        FGraph.addElement       "Hund" (CvTerm.create "")               "Carnivora" (CvTerm.create "")      (Set.singleton IsA) onto
+        |> FGraph.addElement    "Carnivora" (CvTerm.create "")          "Raubtiere" (CvTerm.create "")      (Set.singleton Xref)
+        |> FGraph.addElement    "Carnivora" (CvTerm.create "")          "Laurasiatheria" (CvTerm.create "") (Set.singleton IsA)
+        |> FGraph.addElement    "Raubtiere" (CvTerm.create "")          "Räuber" (CvTerm.create "")         (Set.singleton Xref)
+        |> FGraph.addElement    "Räuber" (CvTerm.create "")             "Eutheria" (CvTerm.create "")       (Set.singleton IsA)
+        |> FGraph.addElement    "Höhere Säugetiere" (CvTerm.create "")  "Höhere Säuger" (CvTerm.create "")  (Set.singleton Xref)
+        |> FGraph.addElement    "Eutheria" (CvTerm.create "")           "Höhere Säuger" (CvTerm.create "")  (Set.singleton Xref)
+        |> FGraph.addElement    "Eutheria" (CvTerm.create "")           "Lateinisch" (CvTerm.create "")     (Set.singleton <| Custom "Sprache")
+        |> FGraph.addElement    "Carnivora" (CvTerm.create "")          "Lateinisch" (CvTerm.create "")     (Set.singleton <| Custom "Sprache")
+        |> FGraph.addElement    "Hund" (CvTerm.create "")               "Deutsch" (CvTerm.create "")        (Set.singleton <| Custom "Sprache")
+        |> FGraph.addElement    "Laurasiatheria" (CvTerm.create "")     "Raubtiere" (CvTerm.create "")      (Set.singleton <| Custom "darunterliegend")
+        |> FGraph.addElement    "Lateinisch" (CvTerm.create "")         "Latein" (CvTerm.create "")         (Set.singleton Xref)
+        |> FGraph.addElement    "Lateinisch" (CvTerm.create "")         "Deutsch" (CvTerm.create "")        (Set.singleton <| Custom "ist nicht") :?> Ontology

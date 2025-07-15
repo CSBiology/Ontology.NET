@@ -43,4 +43,35 @@ module OntologyTests =
                     Expect.isTrue (FGraph.containsNode testTerm.Accession testOnto) "Does not contain newly added test term"
             ]
 
+            testList "RemoveTerm" [
+                testCase "removes term correctly" <| fun _ ->
+                    let testOnto = Ontology()
+                    FGraph.addNode "test:0" (CvTerm.create("test:0", "testTerm", "test")) testOnto |> ignore
+                    testOnto.RemoveTerm "test:0" |> ignore
+                    Expect.isEmpty testOnto "Does contain any test term"
+            ]
+
+            testList "RemoveRelations" [
+                testCase "removes relations correctly" <| fun _ ->
+                    let testOntology = Ontology()
+                    FGraph.addElement "1" (CvTerm.create "") "2" (CvTerm.create "") (Set.singleton <| Custom "") testOntology |> ignore
+                    testOntology.RemoveRelations("1", "2") |> ignore
+                    Expect.isFalse (FGraph.containsEdge "1" "2" testOntology) "Does contain relation(s) that should be removed"
+            ]
+
+            testList "RemoveRelation" [
+                testCase "removes single relation correctly" <| fun _ ->
+                    let testOntology = Ontology()
+                    FGraph.addElement "1" (CvTerm.create "") "2" (CvTerm.create "") (Set [Custom ""; Xref]) testOntology |> ignore
+                    testOntology.RemoveRelation("1", "2", Custom "") |> ignore
+                    let expected = Set [Xref]
+                    let _, _, actual = FGraph.findEdge "1" "2" testOntology
+                    Expect.sequenceEqual actual expected "Relations are different"
+            ]
+
+            testList "GetTargetTermsWithXrefsBy" [
+                testCase "returns all target terms correctly" <| fun _ ->
+                    
+            ]
+
         ]
