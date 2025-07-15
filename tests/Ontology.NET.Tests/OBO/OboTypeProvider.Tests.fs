@@ -14,7 +14,10 @@ module OboProviderTests =
     //let [<Literal>] oboPath = @"tests/Ontology.NET.Tests/OBO/References/go.obo"
 
     // use this for performing the test execution
-    let [<Literal>] oboPath = @"tests/Ontology.NET.Tests/OBO/References/go.obo"
+    // ATTENTION! Seems to be dependent on version of SDK. Sometimes this is enough: [.NET 8]
+    //let [<Literal>] oboPath = @"tests/Ontology.NET.Tests/OBO/References/go.obo"
+    // other times it must be like this: [.NET 9]
+    let [<Literal>] oboPath = @"OBO/References/go.obo"
 
     type goTerms = OboTermsProvider<oboPath>
     type goTypeDefs = OboTypeDefsProvider<oboPath>
