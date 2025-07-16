@@ -171,7 +171,7 @@ type Ontology() =
     /// Returns the term IDs of all terms that have (transitively) an Xref relation to the given term.
     /// </summary>
     /// <param name="termId">The ID of the term by which all Xrefs shall be gotten.</param>
-    member this.GetXrefs termId =
+    member this.GetXrefs(termId) =
         let visited = HashSet()
         let stack = Stack()
 
@@ -200,7 +200,7 @@ type Ontology() =
     /// Returns the terms (as CvTerms) of all terms that have (transitively) an Xref relation to the given term.
     /// </summary>
     /// <param name="termId">The ID of the term by which all Xrefs shall be gotten.</param>
-    member this.GetXrefsAsTerms termId =
+    member this.GetXrefsAsTerms(termId) =
         let visited = HashSet()
         let stack = Stack()
 

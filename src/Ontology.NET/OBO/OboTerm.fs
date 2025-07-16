@@ -517,7 +517,7 @@ type OboTerm =
 
     /// Takes a relationship and returns a tuple consisting of the name of the relationship and the ID of the OboTerm it matches.
     static member deconstructRelationship relationship =
-        let pattern = System.Text.RegularExpressions.Regex @"^(?<relName>.+) (?<id>.+:\d+)$"
+        let pattern = System.Text.RegularExpressions.Regex @"^(?<relName>.+?) (?<id>[^ ]+:\d+)(?: .*)?$"
         let regexMatch = pattern.Match relationship
         regexMatch.Groups["relName"].Value, regexMatch.Groups["id"].Value
 
