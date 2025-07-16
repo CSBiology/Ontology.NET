@@ -19,6 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="OBO\References\testOboFile1.obo" />
+    <None Include="OBO\References\testOboFile2.obo" />
     <None Include="OBO\References\CorrectHeaderTags.obo" />
     <None Include="OBO\References\DuplicateHeaderTags.obo" />
     <None Include="OBO\References\go.obo" />
