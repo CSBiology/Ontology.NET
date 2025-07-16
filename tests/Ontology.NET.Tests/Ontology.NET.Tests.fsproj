@@ -21,10 +21,13 @@
   <ItemGroup>
     <None Include="OBO\References\testOboFile1.obo" />
     <None Include="OBO\References\testOboFile2.obo" />
+    <None Include="obo\references\testOboFile3.obo" />
+    <None Include="obo\references\testOboFile4.obo" />
+    <None Include="obo\references\testOboFile5.obo" />
     <None Include="OBO\References\CorrectHeaderTags.obo" />
     <None Include="OBO\References\DuplicateHeaderTags.obo" />
-    <None Include="OBO\References\go.obo" />
     <None Include="OBO\References\IncorrectHeaderTags.obo" />
+    <None Include="OBO\References\go.obo" />
     <Compile Include="OBO\TermSynonym.Tests.fs" />
     <Compile Include="OBO\OboTerm.Tests.fs" />
     <Compile Include="OBO\OboOntology.Tests.fs" />
