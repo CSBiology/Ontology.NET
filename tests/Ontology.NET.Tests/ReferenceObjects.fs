@@ -31,6 +31,33 @@ module ReferenceObjects =
 
         onto
 
+    // Mermaidchart of this ontology:
+    //flowchart TD
+    //  Hund
+    //  Carnivora
+    //  Raubtiere
+    //  R["Räuber"]
+    //  Eutheria
+    //  HSt["Höhere Säugetiere"]
+    //  HS["Höhere Säuger"]
+    //  Lsch("Lateinisch")
+    //  D("Deutsch")
+    //  L("Latein")
+    //  Laurasiatheria
+
+    //  Hund -->|is_a| Carnivora
+    //  Carnivora -->|xref| Raubtiere
+    //  Carnivora -->|is_a| Laurasiatheria
+    //  Raubtiere -->|xref| R
+    //  R -->|is_a| Eutheria
+    //  HSt -->|xref| HS
+    //  Eutheria -->|xref| HS
+    //  Eutheria -->|Sprache| Lsch
+    //  Carnivora -->|Sprache| Lsch
+    //  Hund -->|Sprache| D
+    //  Laurasiatheria -->|darunterliegend| Raubtiere
+    //  Lsch -->|xref| L
+    //  L -->|ist nicht| D
     let testOnto2 =
         let onto = Ontology()
 
