@@ -15,11 +15,17 @@ module OboTermTests =
     let oboTermTest =
         testList "OboTerm" [
             testList "deconstructRelationship" [
-                testCase "is correctly deconstructed" <| fun _ ->
+                testCase "is correctly deconstructed, simple case" <| fun _ ->
                     let actual = OboTerm.deconstructRelationship "part_of INVMSO:00000082"
                     let expected = "part_of", "INVMSO:00000082"
                     Expect.equal actual expected "is not equal"
+
+                testCase "is correctly deconstructed, complex case" <| fun _ ->
+                    let actual = OboTerm.deconstructRelationship "part_of TGMA:0000002 ! adult head"
+                    let expected = "part_of", "TGMA:0000002"
+                    Expect.equal actual expected "is not equal"
             ]
+
             testList "GetRelatedTermIds" [
                 testCase "returns correct related term IDs" <| fun _ ->
                     let testTerm = OboTerm.Create("id:1", Name = "testTerm1", Relationships = ["related_to id:2"; "unrelated_to id:3"])
@@ -27,6 +33,7 @@ module OboTermTests =
                     let expected = ["id:1", "related_to", "id:2"; "id:1", "unrelated_to", "id:3"]
                     Expect.sequenceEqual actual expected "is not equal"
             ]
+
             testList "ToLines" [
                 testCase "synonym" <| fun _ ->
                     let actual = 
@@ -40,6 +47,7 @@ module OboTermTests =
                     ]
                     Expect.sequenceEqual actual expected ""
             ]
+
             testList "ToCvTerm" [
                 testCase "returns correct CvTerm" <| fun _ ->
                     let actual = OboTerm.toCvTerm testTerm1
