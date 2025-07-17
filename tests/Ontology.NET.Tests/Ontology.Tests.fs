@@ -48,6 +48,13 @@ module OntologyTests =
                     Expect.equal actual expected "id * id * Relation set differ"
             ]
 
+            testList "GetRelation" [
+                testCase "gets relation correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.GetRelation("test:01", "test:02")
+                    let expected = set [Xref]
+                    Expect.equal actual expected "Relations are not equal"
+            ]
+
             testList "RemoveTerm" [
                 testCase "removes term correctly" <| fun _ ->
                     let testOnto = Ontology()

@@ -120,6 +120,22 @@ type Ontology() =
             raise (System.ArgumentException($"terms {sourceTerm} and {targetTerm} do not exist in the Ontology."))
 
     /// <summary>
+    /// Returns the set of Relations from source to target term.
+    /// </summary>
+    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
+    /// <exception cref="System.ArgumentException">Thrown when there is no relation from source to target term in the Ontology.</exception>
+    member this.GetRelation(sourceTerm, targetTerm) =
+        if FGraph.containsEdge sourceTerm targetTerm this then
+            FGraph.findEdge sourceTerm targetTerm this
+            |> fun (_,_,e) -> e
+        else raise (System.ArgumentException($"There is no relation from source terms {sourceTerm} to target term {targetTerm} in the Ontology."))
+        // TO DO: Replace this with the code below as soon as the `FGraph.tryFindEdge` bug is fixed and a new version with the fix is released.
+        //match FGraph.tryFindEdge sourceTerm targetTerm this with
+        //| Some (_,_,e) -> e
+        //| None -> raise (System.ArgumentException($"There is no relation from source terms {sourceTerm} to target term {targetTerm} in the Ontology."))
+
+    /// <summary>
     /// Removes the given term from the Ontology. Also removes all of its relations.
     /// </summary>
     /// <param name="term">The ID of the term that gets removed.</param>
