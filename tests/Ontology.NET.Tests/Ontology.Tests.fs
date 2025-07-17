@@ -24,11 +24,28 @@ module OntologyTests =
             ]
 
             testList "AddTerm" [
-                testCase "adds terms correctly" <| fun _ ->
+                testCase "adds term correctly" <| fun _ ->
                     let testOnto = Ontology()
                     let testTerm = CvTerm.create("test:0", "testTerm", "test")
                     testOnto.AddTerm testTerm |> ignore
                     Expect.isTrue (FGraph.containsNode testTerm.Accession testOnto) "Does not contain newly added test term"
+            ]
+
+            testList "AddRelation" [
+                testCase "adds relation correctly" <| fun _ ->
+                    let testOnto = Ontology()
+                    ["test:0"; "test:1"]
+                    |> List.iter (
+                        fun id ->
+                            FGraph.addNode id (CvTerm.create(id, "testTerm", "test")) testOnto |> ignore
+                    )
+                    testOnto.AddRelation("test:0", "test:1", Custom "") |> ignore
+                    let actual = 
+                        try FGraph.findEdge "test:0" "test:1" testOnto |> Some with
+                        | _ -> None
+                    let expected = Some ("test:0", "test:1", set [Custom ""])
+                    Expect.isSome actual "is None although it should be Some"
+                    Expect.equal actual expected "id * id * Relation set differ"
             ]
 
             testList "RemoveTerm" [
