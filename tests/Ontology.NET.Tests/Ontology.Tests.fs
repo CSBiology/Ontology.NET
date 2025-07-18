@@ -48,6 +48,13 @@ module OntologyTests =
                     Expect.equal actual expected "id * id * Relation set differ"
             ]
 
+            testList "GetTerm" [
+                testCase "gets term correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.GetTerm("test:01")
+                    let expected = CvTerm.create("test:01", "Frosch", "test")
+                    Expect.equal actual expected "CvTerms differ"
+            ]
+
             testList "GetRelation" [
                 testCase "gets relation correctly" <| fun _ ->
                     let actual = ReferenceObjects.testOnto1.GetRelation("test:01", "test:02")

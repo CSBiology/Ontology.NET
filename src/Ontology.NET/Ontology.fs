@@ -102,6 +102,24 @@ type Ontology() =
         FGraph.addNode term.Accession term this :?> Ontology
 
     /// <summary>
+    /// Returns the CvTerm under the given term ID.
+    /// </summary>
+    /// <param name="termId">The ID of the CvTerm that shall be returned.</param>
+    /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the given ID has no CvTerm in the Ontology.</exception>
+    member this.GetTerm(termId) =
+        try FGraph.findNode termId this |> snd with
+        | :? KeyNotFoundException -> 
+            raise (KeyNotFoundException($"No term with ID present in the Ontology."))
+
+    /// <summary>
+    /// Returns the CvTerm under the given term ID if it exists in the Ontology. Else returns None.
+    /// </summary>
+    /// <param name="termId">The ID of the CvTerm that shall be returned.</param>
+    member this.TryGetTerm(termId) =
+        try Some (this.GetTerm(termId)) with
+        | :? KeyNotFoundException -> None
+
+    /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
     /// </summary>
     /// <param name="sourceTerm">The ID of the term from which the relation originates.</param>
@@ -170,14 +188,6 @@ type Ontology() =
         //    FGraph.setEdgeData sourceTerm targetTerm (Set.remove relation e) this :?> Ontology
         //| None ->
         //    raise (System.ArgumentException($"no edge between source term {sourceTerm} and target term {targetTerm}."))
-
-    /// <summary>
-    /// Returns the CvTerm of the given term ID.
-    /// </summary>
-    /// <param name="termID">The term's ID whose full CvTerm shall be returned.</param>
-    member this.GetTermById(termID) =
-        this[termID] 
-        |> fun (_,nd,_) -> nd
 
 
 
