@@ -222,35 +222,6 @@ type Ontology() =
                         visited.Add(kv.Key) |> ignore
         }
 
-    /// <summary>
-    /// Returns the terms (as CvTerms) of all terms that have (transitively) an Xref relation to the given term.
-    /// </summary>
-    /// <param name="termId">The ID of the term by which all Xrefs shall be gotten.</param>
-    member this.GetXrefsAsTerms(termId) =
-        let visited = HashSet()
-        let stack = Stack()
-
-        stack.Push(termId)
-        visited.Add(termId) |> ignore
-
-        seq {
-            while stack.Count > 0 do
-                let nodeKey = stack.Pop()
-                let (a, nd, d) = this[nodeKey]
-                if nodeKey <> termId then 
-                    yield nd
-
-                for kv in a do
-                    if not(visited.Contains(kv.Key)) && Set.contains Xref a[kv.Key] then
-                        stack.Push(kv.Key)
-                        visited.Add(kv.Key) |> ignore
-
-                for kv in d do
-                    if not(visited.Contains(kv.Key)) && Set.contains Xref d[kv.Key] then
-                        stack.Push(kv.Key)
-                        visited.Add(kv.Key) |> ignore
-        }
-
 
     // target relation functionality:
 
@@ -294,11 +265,11 @@ type Ontology() =
         }
 
     /// <summary>
-    /// Returns all terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
+    /// Returns all terms that are transitively target-related to the given term ID and their Xrefs, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
     /// </summary>
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="predicate">A function that takes the current term ID, the corresponding CvTerm, and its outgoing relations, and returns a boolean indicating whether traversal should follow that term.</param>
-    /// <returns>A sequence of term IDs representing all target-related terms reachable by recursively following valid relations as defined by the predicate.</returns>
+    /// <returns>A sequence of term IDs representing all target-related terms and their Xrefs reachable by recursively following valid relations as defined by the predicate.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
     member this.GetTargetTermsWithXrefsBy(termID, predicate) =
         let visited = HashSet<string>()
@@ -329,34 +300,6 @@ type Ontology() =
         }
 
     /// <summary>
-    /// Returns all terms as CvTerms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
-    /// </summary>
-    /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="predicate">A function that takes the current term ID, the corresponding CvTerm, and its outgoing relations, and returns a boolean indicating whether traversal should follow that term.</param>
-    /// <returns>A sequence of CvTerms representing all target-related terms reachable by recursively following valid relations as defined by the predicate.</returns>
-    /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsAsCvTermsBy(termID, predicate) =
-        let visited = HashSet<string>()
-        let stack = Stack<string>()
-
-        stack.Push(termID)
-        visited.Add(termID) |> ignore
-
-        seq {
-            while stack.Count > 0 do
-                let nodeKey = stack.Pop()
-                let (_, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
-                    yield nd
-
-                for kv in s do
-                    let _, ndSuccessor, _ = this[kv.Key]
-                    if not (visited.Contains(kv.Key)) && predicate kv.Key ndSuccessor s[kv.Key] then
-                        stack.Push(kv.Key)
-                        visited.Add(kv.Key) |> ignore
-        }
-
-    /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
@@ -384,12 +327,12 @@ type Ontology() =
         }
 
     /// <summary>
-    /// Returns all terms as CvTerms that are transitively target-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
+    /// Returns all terms that are transitively target-related to the given term ID and their Xref terms, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
-    /// <returns>A sequence of CvTerms representing all target-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
+    /// <returns>A sequence of term IDs representing all target-related terms and their Xrefs that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsAsCvTermsWithDepth(termID, depth) =
+    member this.GetTargetTermWithXrefsWithDepth(termID, depth) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
@@ -401,13 +344,20 @@ type Ontology() =
                 let nodeKey, currDepth = stack.Pop()
                 let (_, nd, s) = this[nodeKey]
                 if nodeKey <> termID then
-                    yield nd
+                    yield nodeKey
 
                 if currDepth < depth then
                     for kv in s do
                         if not (visited.Contains(kv.Key)) then
                             stack.Push(kv.Key, currDepth + 1)
                             visited.Add(kv.Key) |> ignore
+                            let xrefs = this.GetXrefs kv.Key
+                            xrefs
+                            |> Seq.iter (
+                                fun xref ->
+                                    stack.Push(xref, currDepth)
+                                    visited.Add(xref) |> ignore
+                            )
         }
 
     /// <summary>
@@ -438,12 +388,12 @@ type Ontology() =
         }
 
     /// <summary>
-    /// Returns all terms as CvTerms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
+    /// Returns all terms that are transitively target-related to the given term ID and their Xrefs, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
-    /// <returns>A sequence of CvTerms representing all target-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
+    /// <returns>A sequence of term IDs representing all target-related terms and their Xrefs that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsAsCvTermsWithDepthBy(termID, depth, predicate) =
+    member this.GetTargetTermsWithXrefsWithDepthBy(termID, depth, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
@@ -454,7 +404,7 @@ type Ontology() =
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (_, nd, s) = this[nodeKey]
-                yield nd
+                yield nodeKey
 
                 if currDepth < depth then
                     for kv in s do
@@ -462,6 +412,13 @@ type Ontology() =
                         if not( visited.Contains(kv.Key)) && predicate kv.Key ndSuccessor s[kv.Key] then
                             stack.Push(kv.Key, currDepth + 1)
                             visited.Add(kv.Key) |> ignore
+                            let xrefs = this.GetXrefs kv.Key
+                            xrefs
+                            |> Seq.iter (
+                                fun xref ->
+                                    stack.Push(xref, currDepth)
+                                    visited.Add(xref) |> ignore
+                            )
         }
 
 
@@ -656,14 +613,6 @@ type Ontology() =
     member this.GetSuperClassesTransitively(termID) =
         this.GetTargetTermsBy(termID, fun _ _ e -> Set.contains IsA e)
 
-    /// <summary>
-    /// Returns all terms that are transitively target-related via an is_a relation to the given term ID.
-    /// </summary>
-    /// <param name="termID">The ID of the starting term.</param>
-    /// <returns>A sequence of CvTerms representing all is_a target-related terms.</returns>
-    member this.GetSuperClassesTransitivelyAsTerms(termID) =
-        this.GetTargetTermsAsCvTermsBy(termID, fun _ _ e -> Set.contains IsA e)
-
 
     // SubClass functionality:
 
@@ -676,10 +625,6 @@ type Ontology() =
     /// Returns the term IDs of all terms that have an Xref relation to the given term with the given Ontology.
     static member getXrefs termId (onto : Ontology) =
         onto.GetXrefs termId
-
-    /// Returns the terms (as CvTerms) of all terms that have an Xref relation to the given term with the given Ontology.
-    static member getXrefsAsTerms termId (onto : Ontology) =
-        onto.GetXrefsAsTerms termId
 
     /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
@@ -701,15 +646,6 @@ type Ontology() =
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
     static member getTargetTermsWithDepth termID depth (onto : Ontology) =
         onto.GetTargetTermsWithDepth(termID, depth)
-
-    /// <summary>
-    /// Returns all terms that are transitively target-related via an is_a relation to the given term ID.
-    /// </summary>
-    /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="onto">The Ontology on which the operation is performed.</param>
-    /// <returns>A sequence of CvTerms representing all is_a target-related terms.</returns>
-    static member getSuperClassesTransitivelyAsTerms termID (onto : Ontology) =
-        onto.GetSuperClassesTransitivelyAsTerms(termID)
 
     /// <summary>
     /// Returns all terms that are transitively target-related via an is_a relation to the given term ID.
