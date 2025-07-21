@@ -512,7 +512,8 @@ type Ontology() =
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (p, nd, s) = this[nodeKey]
-                yield nodeKey
+                if nodeKey <> termID then
+                    yield nodeKey
 
                 if currDepth < depth then
                     for kv in p do
