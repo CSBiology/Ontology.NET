@@ -463,7 +463,7 @@ type Ontology() =
 
                 for kv in p do
                     let _, ndPred, _ = this[kv.Key]
-                    if not (visited.Contains(kv.Key)) && predicate kv.Key ndPred s[kv.Key] then
+                    if not (visited.Contains(kv.Key)) && predicate kv.Key ndPred p[kv.Key] then
                         stack.Push(kv.Key)
                         visited.Add(kv.Key) |> ignore
         }
@@ -517,7 +517,7 @@ type Ontology() =
                 if currDepth < depth then
                     for kv in p do
                         let _, ndPred, _ = this[kv.Key]
-                        if not( visited.Contains(kv.Key)) && predicate kv.Key ndPred s[kv.Key] then
+                        if not( visited.Contains(kv.Key)) && predicate kv.Key ndPred p[kv.Key] then
                             stack.Push(kv.Key, currDepth + 1)
                             visited.Add(kv.Key) |> ignore
         }
