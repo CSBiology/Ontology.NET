@@ -57,7 +57,7 @@ module ReferenceObjects =
     //  Hund -->|Sprache| D
     //  Laurasiatheria -->|darunterliegend| Raubtiere
     //  Lsch -->|xref| L
-    //  L -->|ist nicht| D
+    //  Lsch -->|ist nicht| D
     let testOnto2 =
         let onto = Ontology()
 
