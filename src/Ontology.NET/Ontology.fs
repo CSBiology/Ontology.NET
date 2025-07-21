@@ -467,67 +467,12 @@ type Ontology() =
         }
 
     /// <summary>
-    /// Returns all terms as CvTerm that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
-    /// </summary>
-    /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="predicate">A function that takes the current term ID, the corresponding CvTerm, and its outgoing relations, and returns a boolean indicating whether traversal should follow that term.</param>
-    /// <returns>A sequence of term IDs representing all source-related terms reachable by recursively following valid relations as defined by the predicate.</returns>
-    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsAsCvTermsBy(termID, predicate) =
-        let visited = HashSet<string>()
-        let stack = Stack<string>()
-
-        stack.Push(termID)
-        visited.Add(termID) |> ignore
-
-        seq {
-            while stack.Count > 0 do
-                let nodeKey = stack.Pop()
-                let (p, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
-                    yield nd
-
-                for kv in p do
-                    let _, ndPred, _ = this[kv.Key]
-                    if not (visited.Contains(kv.Key)) && predicate kv.Key ndPred s[kv.Key] then
-                        stack.Push(kv.Key)
-                        visited.Add(kv.Key) |> ignore
-        }
-
-    /// <summary>
     /// Returns all terms that are transitively source-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
     /// <returns>A sequence of term IDs representing all source-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
     member this.GetSourceTermsWithDepth(termID, depth) =
-        let visited = HashSet<string>()
-        let stack = Stack<string * int>()
-
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
-
-        seq {
-            while stack.Count > 0 do
-                let nodeKey, currDepth = stack.Pop()
-                let (p, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
-                    yield nodeKey
-
-                if currDepth < depth then
-                    for kv in p do
-                        if not (visited.Contains(kv.Key)) then
-                            stack.Push(kv.Key, currDepth + 1)
-                            visited.Add(kv.Key) |> ignore
-        }
-
-    /// <summary>
-    /// Returns all terms as CvTerms that are transitively source-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
-    /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
-    /// <returns>A sequence of CvTerms representing all source-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
-    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsAsCvTermsWithDepth(termID, depth) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
@@ -566,33 +511,6 @@ type Ontology() =
                 let nodeKey, currDepth = stack.Pop()
                 let (p, nd, s) = this[nodeKey]
                 yield nodeKey
-
-                if currDepth < depth then
-                    for kv in p do
-                        let _, ndPred, _ = this[kv.Key]
-                        if not( visited.Contains(kv.Key)) && predicate kv.Key ndPred s[kv.Key] then
-                            stack.Push(kv.Key, currDepth + 1)
-                            visited.Add(kv.Key) |> ignore
-        }
-
-    /// <summary>
-    /// Returns all terms as CvTerms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
-    /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
-    /// <returns>A sequence of CvTerms representing all source-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
-    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsAsCvTermsWithDepthBy(termID, depth, predicate) =
-        let visited = HashSet<string>()
-        let stack = Stack<string * int>()
-
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
-
-        seq {
-            while stack.Count > 0 do
-                let nodeKey, currDepth = stack.Pop()
-                let (p, nd, s) = this[nodeKey]
-                yield nd
 
                 if currDepth < depth then
                     for kv in p do
