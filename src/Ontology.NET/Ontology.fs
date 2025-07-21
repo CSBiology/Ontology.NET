@@ -332,7 +332,7 @@ type Ontology() =
     /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
     /// <returns>A sequence of term IDs representing all target-related terms and their Xrefs that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermWithXrefsWithDepth(termID, depth) =
+    member this.GetTargetTermsWithXrefsWithDepth(termID, depth) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
