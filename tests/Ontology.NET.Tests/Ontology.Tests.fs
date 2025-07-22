@@ -70,14 +70,6 @@ module OntologyTests =
                     Expect.isEmpty testOnto "Does contain any test term"
             ]
 
-            testList "RemoveRelations" [
-                testCase "removes relations correctly" <| fun _ ->
-                    let testOntology = Ontology()
-                    FGraph.addElement "1" (CvTerm.create "") "2" (CvTerm.create "") (Set.singleton <| Custom "") testOntology |> ignore
-                    testOntology.RemoveRelations("1", "2") |> ignore
-                    Expect.isFalse (FGraph.containsEdge "1" "2" testOntology) "Does contain relation(s) that should be removed"
-            ]
-
             testList "RemoveRelation" [
                 testCase "removes single relation correctly" <| fun _ ->
                     let testOntology = Ontology()
@@ -86,6 +78,14 @@ module OntologyTests =
                     let expected = Set [Xref]
                     let _, _, actual = FGraph.findEdge "1" "2" testOntology
                     Expect.sequenceEqual actual expected "Relations are different"
+            ]
+
+            testList "RemoveRelations" [
+                testCase "removes relations correctly" <| fun _ ->
+                    let testOntology = Ontology()
+                    FGraph.addElement "1" (CvTerm.create "") "2" (CvTerm.create "") (Set.singleton <| Custom "") testOntology |> ignore
+                    testOntology.RemoveRelations("1", "2") |> ignore
+                    Expect.isFalse (FGraph.containsEdge "1" "2" testOntology) "Does contain relation(s) that should be removed"
             ]
 
             testList "GetXrefs" [
@@ -109,6 +109,20 @@ module OntologyTests =
                     Expect.isTrue (List.isEmpty actual) "Xref list is not empty"
             ]
 
+            testList "GetTargetTermRelations" [
+                testCase "returns all target term relations correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.GetTargetTermRelations("test:01") |> Seq.toList
+                    let expected = ["test:02", Set.singleton Xref; "test:04", Set.singleton IsA]
+                    Expect.sequenceEqual actual expected "Target term relations differ"
+            ]
+
+            testList "GetTargetTermsBy" [
+                testCase "returns target terms correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.GetTargetTermsBy("test:01", fun _ _ e -> Set.contains IsA e) |> Seq.toList
+                    let expected = ["test:04"]
+                    Expect.sequenceEqual actual expected "Target term list differs"
+            ]
+
             testList "GetTargetTermsWithXrefsBy" [
                  testCase "returns all target terms correctly, Case: Hund is_a ..." <| fun _ ->
                      let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Hund", fun _ _ relations -> Set.contains IsA relations) |> Seq.toList
@@ -129,6 +143,62 @@ module OntologyTests =
                      let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Eutheria", fun termID _ _ -> String.contains " " termID) |> Seq.toList
                      let expected = ["Höhere Säugetiere"; "Höhere Säuger"]
                      Expect.sequenceEqual actual expected "Target terms differ"
+            ]
+
+            testList "GetTargetTermsWithDepth" [
+                testCase "returns all target terms correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetTargetTermsWithDepth("Hund",2) |> Seq.toList
+                    let expected = ["Deutsch"; "Carnivora"; "Lateinisch"; "Laurasiatheria"; "Raubtiere"]
+                    Expect.sequenceEqual actual expected "Target terms differ"
+            ]
+
+            testList "GetTargetTermsWithXrefsWithDepth" [
+                testCase "returns all target terms correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsWithDepth("Hund",2) |> Seq.toList
+                    let expected = ["Deutsch"; "Räuber"; "Höhere Säugetiere"; "Höhere Säuger"; "Eutheria"; "Latein"; "Lateinisch"; "Raubtiere"; "Carnivora"; "Laurasiatheria"]
+                    Expect.sequenceEqual actual expected "Target terms differ"
+            ]
+
+            testList "GetTargetTermsWithDepthBy" [
+                testCase "returns all target terms correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetTargetTermsWithDepthBy("Hund", 2, fun _ _ e -> Set.contains IsA e || Set.contains (Custom "Sprache") e) |> Seq.toList
+                    let expected = ["Deutsch"; "Carnivora"; "Lateinisch"; "Laurasiatheria"]
+                    Expect.sequenceEqual actual expected "Target terms differ"
+            ]
+
+            testList "GetTargetTermsWithXrefsWithDepthBy" [
+                testCase "returns all target terms correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsWithDepthBy("Hund", 2, fun _ _ e -> Set.contains IsA e) |> Seq.toList
+                    let expected = ["Räuber"; "Höhere Säugetiere"; "Höhere Säuger"; "Eutheria"; "Raubtiere"; "Carnivora"; "Laurasiatheria"]
+                    Expect.sequenceEqual actual expected "Target terms differ"
+            ]
+
+            testList "GetSourceTermRelations" [
+                testCase "returns all source term relations correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetSourceTermRelations("Deutsch") |> Seq.toList
+                    let expected = ["Hund", Set.singleton (Custom "Sprache"); "Lateinisch", Set.singleton (Custom "ist nicht")]
+                    Expect.sequenceEqual actual expected "Source term relations differ"
+            ]
+
+            testList "GetSourceTermsBy" [
+                testCase "returns all source terms correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetSourceTermsBy("Deutsch", fun _ _ e -> Set.contains (Custom "Sprache") e) |> Seq.toList
+                    let expected = List.singleton "Hund"
+                    Expect.sequenceEqual actual expected "Source terms differ"
+            ]
+
+            testList "GetSourceTermsWithDepth" [
+                testCase "returns all source terms correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetSourceTermsWithDepth("Deutsch", 2) |> Seq.toList
+                    let expected = ["Lateinisch"; "Carnivora"; "Eutheria"; "Hund"]
+                    Expect.sequenceEqual actual expected "Source terms differ"
+            ]
+
+            testList "GetSourceTermsWithDepthBy" [
+                testCase "returns all source terms correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetSourceTermsWithDepthBy("Deutsch", 2, fun _ _ e -> Set.contains (Custom "Sprache") e || Set.contains (Custom "ist nicht") e) |> Seq.toList
+                    let expected = ["Lateinisch"; "Hund"; "Eutheria"]
+                    Expect.sequenceEqual actual expected "Source terms differ"
             ]
 
         ]
