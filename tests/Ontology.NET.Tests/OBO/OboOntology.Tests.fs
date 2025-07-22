@@ -190,4 +190,19 @@ module OboOntologyTests =
                     let actual = testOntology.ReturnAllEquivalentTerms(testOntology2)
                     Expect.sequenceEqual actual (seq {testTerm4}) "is not equal"
             ]
+
+            testList "ImportFromHeaders" [
+                 testCase "returns correct relative path OboOntology" <| fun _ ->
+                    let testOboFile3Path = Path.Combine(__SOURCE_DIRECTORY__, "references", "testOboFile3.obo")
+                    let testOboFile3 = OboOntology.fromFile false testOboFile3Path
+                    let actual = 
+                        testOboFile3.ImportFromHeaders(basePath = testOboFile3Path) 
+                        |> Seq.map (
+                            fun o -> Option.defaultValue "<missing>" o.Ontology
+                        )
+                        |> Seq.toList
+                    let expected = ["TO4"; "TO5"]
+                    Expect.sequenceEqual actual expected "Test OBO files not parsed correctly"
+            ]
+
         ]

@@ -1,8 +1,10 @@
 ﻿namespace Ontology.NET.OBO
 
+
 open DBXref
 //open OboTerm
 //open OboTypedef
+open ImportAux
 
 open FSharpAux
 open FSharpAux.Regex
@@ -231,6 +233,62 @@ type OboOntology =
     /// Writes an OBO Ontology to term and type def stanzas to a file in the given path.
     member this.ToFile(path : string) =
         OboOntology.toFile path this
+
+    /// <summary>
+    /// Parses the Import-section from the header of the OboOntology and returns all parsed OboOntologies.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    member this.ImportFromHeaders(?verbose, ?basePath) =
+        let verbosity = Option.defaultValue false verbose
+        let recognizedImports =
+            this.Imports
+            |> Seq.map (recognizeInput basePath)
+        recognizedImports
+        |> Seq.map (
+            fun i ->
+                match i with
+                | Url u -> 
+                    let dlObo = downloadString u
+                    String.split '\n' dlObo
+                    |> OboOntology.fromLines verbosity
+                | AbsoluteFilePath afp ->
+                    OboOntology.fromFile verbosity afp
+                | RelativeFilePath rfp ->
+                    if Option.isSome basePath then
+                        let basePathDir = (Option.get >> getOrReturnDir) basePath
+                        let totalFilePath = Path.Combine(basePathDir, rfp)
+                        totalFilePath
+                    else
+                        raise (System.ArgumentException($"basePath is None but must be provided when relative path is given."))
+                    |> OboOntology.fromFile verbosity
+        )
+
+    /// <summary>
+    /// Parses the Import-section from the header of the given OboOntology and returns all parsed OboOntologies.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    /// <param name="oboOnto">The OboOntology whose Import section is parsed.</param>
+    static member importFromHeaders verbose basePath (oboOnto : OboOntology) =
+        oboOnto.ImportFromHeaders(?verbose = verbose, ?basePath = basePath)
+
+    /// <summary>
+    /// Parses the Import-section from the header of the OboOntology and returns all parsed OboOntologies alongside the input OboOntology.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    member this.WithImportsFromHeaders(?verbose, ?basePath) =
+        seq {this; yield! this.ImportFromHeaders(?verbose = verbose, ?basePath = basePath)}
+
+    /// <summary>
+    /// Parses the Import-section from the header of the OboOntology and returns all parsed OboOntologies alongside the input OboOntology.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    /// <param name="oboOnto">The OboOntology whose Import section is parsed.</param>
+    static member withImportsFromHeaders verbose basePath (oboOnto: OboOntology) =
+        oboOnto.WithImportsFromHeaders(?verbose = verbose, ?basePath = basePath)
 
     /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID if it exists. Else returns None.
     member this.TryGetTerm(id : string) = 
