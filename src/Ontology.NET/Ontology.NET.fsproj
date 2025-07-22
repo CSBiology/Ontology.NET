@@ -18,6 +18,7 @@
     <Compile Include="TypeProviderDeps\ProvidedTypes.fsi" />
     <Compile Include="TypeProviderDeps\ProvidedTypes.fs" />
     <Compile Include="GraphoscopeAux.fs" />
+    <Compile Include="ImportAux.fs" />
     <Compile Include="OBO\DBXRef.fs" />
     <Compile Include="OBO\TermSynonym.fs" />
     <Compile Include="OBO\OboTerm.fs" />
