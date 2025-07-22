@@ -211,7 +211,7 @@ module OntologyTests =
             testList "GetSourceTermsWithDepthBy" [
                 testCase "returns all source terms correctly" <| fun _ ->
                     let actual = ReferenceObjects.testOnto2.GetSourceTermsWithDepthBy("Deutsch", 2, fun _ _ e -> Set.contains (Custom "Sprache") e || Set.contains (Custom "ist nicht") e) |> Seq.toList
-                    let expected = ["Lateinisch"; "Hund"; "Eutheria"]
+                    let expected = ["Lateinisch"; "Carnivora"; "Eutheria"; "Hund"]
                     Expect.sequenceEqual actual expected "Source terms differ"
             ]
 
