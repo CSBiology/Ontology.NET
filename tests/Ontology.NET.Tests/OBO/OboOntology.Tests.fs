@@ -52,12 +52,18 @@ module OboOntologyTests =
                     Name = "checkTerm1"
                 )
 
+
             let testFile1Path = Path.Combine(__SOURCE_DIRECTORY__, "References", "CorrectHeaderTags.obo")
             let testFile2Path = Path.Combine(__SOURCE_DIRECTORY__, "References", "IncorrectHeaderTags.obo")
             let testFile3Path = Path.Combine(__SOURCE_DIRECTORY__, "References", "DuplicateHeaderTags.obo")
             let testFile1 = try OboOntology.fromFile false testFile1Path |> Some with _ -> None
             let testFile2 = try OboOntology.fromFile false testFile2Path |> Some with _ -> None
             let testFile3 = try OboOntology.fromFile false testFile3Path |> Some with _ -> None
+            let testOboFile3Path = Path.Combine(__SOURCE_DIRECTORY__, "references", "testOboFile3.obo")
+            let testOboFile3 = try OboOntology.fromFile false testOboFile3Path |> Some with _ -> None
+            let goPath = Path.Combine(__SOURCE_DIRECTORY__, "references", "go.obo")
+            let go = try OboOntology.fromFile false goPath |> Some with _ -> None
+
 
             testList "fromFile" [
                 testCase "can read files" <| fun _ ->
@@ -193,16 +199,25 @@ module OboOntologyTests =
 
             testList "ImportFromHeaders" [
                  testCase "returns correct relative path OboOntology" <| fun _ ->
-                    let testOboFile3Path = Path.Combine(__SOURCE_DIRECTORY__, "references", "testOboFile3.obo")
-                    let testOboFile3 = OboOntology.fromFile false testOboFile3Path
                     let actual = 
-                        testOboFile3.ImportFromHeaders(basePath = testOboFile3Path) 
+                        testOboFile3.Value.ImportFromHeaders(basePath = testOboFile3Path) 
                         |> Seq.map (
                             fun o -> Option.defaultValue "<missing>" o.Ontology
                         )
                         |> Seq.toList
                     let expected = ["TO4"; "TO5"]
                     Expect.sequenceEqual actual expected "Test OBO files not parsed correctly"
+            ]
+
+            testList "GetOntologyId" [
+                testCase "returns correct OboOntology ID" <| fun _ ->
+                    let actual1 = testOboFile3.Value.GetOntologyId()
+                    let expected1 = "TO3"
+                    Expect.equal actual1 expected1 "OboOntology ID is not equal for TO3"
+
+                    let actual2 = go.Value.GetOntologyId()
+                    let expected2 = "TGMA"
+                    Expect.equal actual2 expected2 "OboOntology ID is not equal for GO"
             ]
 
         ]

@@ -290,6 +290,36 @@ type OboOntology =
     static member withImportsFromHeaders verbose basePath (oboOnto: OboOntology) =
         oboOnto.WithImportsFromHeaders(?verbose = verbose, ?basePath = basePath)
 
+    //member this.ImportFromHeadersTransitively(?verbose, ?basePath) =
+    //    let alreadyImported = Collections.Generic.HashSet<string>()
+    //    seq {
+    //        this.ImportFromHeaders(?verbose = verbose, ?basePath = basePath)
+    //        |> Seq.map (
+    //            fun o ->
+    //                o,
+    //                o.Ontology
+    //            //if 
+    //        )
+    //    }
+
+    /// <summary>
+    /// Returns the OboOntology's ID if it exists. Else assumes the reference ID to be that of the first given OboTerm.
+    /// </summary>
+    /// <param name="onto"></param>
+    member this.GetOntologyId() =
+        match this.Ontology with
+        | Some id ->
+            id
+        | None ->
+            ControlledVocabulary.CvTerm.refOfAccession this.Terms.Head.Id
+
+    /// <summary>
+    /// Returns the given OboOntology's ID if it exists. Else assumes the reference ID to be that of the first given OboTerm.
+    /// </summary>
+    /// <param name="onto">The OboOntology whose ID shall be returned.</param>
+    static member getOntologyId (oboOnto : OboOntology) =
+        oboOnto.GetOntologyId()
+
     /// Finds OBO term by "TermSourceRef:TermAccessionNumber" style ID if it exists. Else returns None.
     member this.TryGetTerm(id : string) = 
         this.Terms
