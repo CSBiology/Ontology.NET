@@ -257,7 +257,7 @@ type OboOntology =
                 | RelativeFilePath rfp ->
                     if Option.isSome basePath then
                         let basePathDir = (Option.get >> getOrReturnDir) basePath
-                        let totalFilePath = Path.Combine(basePathDir, rfp)
+                        let totalFilePath = Path.Combine(basePathDir, trimSlashes rfp)
                         totalFilePath
                     else
                         raise (System.ArgumentException($"basePath is None but must be provided when relative path is given."))
