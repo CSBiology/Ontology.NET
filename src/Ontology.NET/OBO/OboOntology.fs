@@ -243,7 +243,7 @@ type OboOntology =
         let verbosity = Option.defaultValue false verbose
         let recognizedImports =
             this.Imports
-            |> Seq.map (recognizeInput basePath)
+            |> Seq.map recognizeInput
         recognizedImports
         |> Seq.map (
             fun i ->
@@ -290,22 +290,44 @@ type OboOntology =
     static member withImportsFromHeaders verbose basePath (oboOnto: OboOntology) =
         oboOnto.WithImportsFromHeaders(?verbose = verbose, ?basePath = basePath)
 
-    //member this.ImportFromHeadersTransitively(?verbose, ?basePath) =
-    //    let alreadyImported = Collections.Generic.HashSet<string>()
-    //    seq {
-    //        this.ImportFromHeaders(?verbose = verbose, ?basePath = basePath)
-    //        |> Seq.map (
-    //            fun o ->
-    //                o,
-    //                o.Ontology
-    //            //if 
-    //        )
-    //    }
+    /// <summary>
+    /// Parses the Import-section from the header of the OboOntology and returns all parsed OboOntologies. Repeates this with the newly imported OboOntologies recursively.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    /// <remarks>Note that the base path does not change which means that for relative paths all OBO ontologies must stem from the same relative directory.</remarks>
+    member this.ImportFromHeadersTransitively(?verbose, ?basePath) =
+
+        let alreadyImported = Collections.Generic.HashSet<string>()
+        alreadyImported.Add (this.GetOntologyId()) |> ignore
+
+        let rec loop (importList : OboOntology list) (outList : OboOntology list) =
+            match importList with
+            | h :: t -> 
+                if alreadyImported.Contains(h.GetOntologyId()) then
+                    loop t outList
+                else
+                    let newImports = h.ImportFromHeaders(?verbose = verbose, ?basePath = basePath) |> Seq.toList
+                    alreadyImported.Add(h.GetOntologyId()) |> ignore
+                    loop (newImports @ t) (h :: outList)
+            | [] -> outList
+
+        loop (Seq.toList (this.ImportFromHeaders(?verbose = verbose, ?basePath = basePath))) []
+        |> Seq.ofList
+
+    /// <summary>
+    /// Parses the Import-section from the header of the given OboOntology and returns all parsed OboOntologies. Repeates this with the newly imported OboOntologies recursively.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    /// <param name="oboOnto">The OboOntology whose Import section is parsed.</param>
+    /// <remarks>Note that the base path does not change which means that for relative paths all OBO ontologies must stem from the same relative directory.</remarks>
+    static member importFromHeadersTransitively verbose basePath (oboOnto : OboOntology) =
+        oboOnto.ImportFromHeadersTransitively(?verbose = verbose, ?basePath = basePath)
 
     /// <summary>
     /// Returns the OboOntology's ID if it exists. Else assumes the reference ID to be that of the first given OboTerm.
     /// </summary>
-    /// <param name="onto"></param>
     member this.GetOntologyId() =
         match this.Ontology with
         | Some id ->

@@ -6,14 +6,17 @@ saved-by: Oliver Maus
 auto-generated-by: TalkGPT
 import: /testOboFile3.obo
 import: /testOboFile4.obo
+import: /testOboFile6.obo
 treat-xrefs-as-equivalent: TO3
 treat-xrefs-as-equivalent: TO4
+treat-xrefs-as-equivalent: TO6
 
 
 [Term]
 id: TO5:01
 name: testTerm1
 xref: TO4:1
+xref: TO6:1
 is_a: TO5:02
 
 [Term]

@@ -24,6 +24,7 @@
     <None Include="obo\references\testOboFile3.obo" />
     <None Include="obo\references\testOboFile4.obo" />
     <None Include="obo\references\testOboFile5.obo" />
+    <None Include="OBO\references\testOboFile6.obo" />
     <None Include="OBO\References\CorrectHeaderTags.obo" />
     <None Include="OBO\References\DuplicateHeaderTags.obo" />
     <None Include="OBO\References\IncorrectHeaderTags.obo" />

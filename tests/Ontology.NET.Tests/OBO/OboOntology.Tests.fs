@@ -220,4 +220,14 @@ module OboOntologyTests =
                     Expect.equal actual2 expected2 "OboOntology ID is not equal for GO"
             ]
 
+            testList "ImportFromHeadersTransitively" [
+                testCase "returns correct relative path OboOntologies" <| fun _ ->
+                    let actual =
+                        testOboFile3.Value.ImportFromHeadersTransitively(basePath = testOboFile3Path)
+                        |> Seq.map (fun o -> o.GetOntologyId())
+                        |> Seq.toList
+                    let expected = ["TO6"; "TO5"; "TO4"]
+                    Expect.sequenceEqual actual expected "Test OBO files not parsed correctly"
+            ]
+
         ]
