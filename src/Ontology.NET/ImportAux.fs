@@ -36,7 +36,7 @@ let getOrReturnDir path =
 let trimSlashes (path : string) =
     path.TrimStart('\\', '/')
 
-let recognizeInput basePath input =
+let recognizeInput input =
     match input with
     | x when (url.Match(x)).Success -> 
         Url input
