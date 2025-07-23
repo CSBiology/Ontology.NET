@@ -24,8 +24,8 @@ type UriType =
 open RegexPatterns
 
 let downloadString (uri : string) =
-    let wc = new System.Net.WebClient()
-    wc.DownloadString(uri)
+    let wc = new System.Net.Http.HttpClient()
+    wc.GetStringAsync(uri).Result
 
 let getOrReturnDir path =
     if File.GetAttributes(path).HasFlag(FileAttributes.Directory) then
