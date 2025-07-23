@@ -37,7 +37,7 @@ type CvTerm = {
     /// </summary>
     /// <param name="accession">The input accession.</param>
     static member refOfAccession accession =
-        let m = System.Text.RegularExpressions.Regex.Match(accession, @"^(?<TermSourceRef>[A-Za-z]+):(\d+)$")
+        let m = System.Text.RegularExpressions.Regex.Match(accession, @"^(?<TermSourceRef>[A-Za-z0-9]+):(\d+)$")
         m.Groups["TermSourceRef"].Value
 
     /// <summary>
