@@ -33,6 +33,9 @@ let getOrReturnDir path =
     else 
         (FileInfo path).Directory.FullName
 
+let trimSlashes (path : string) =
+    path.TrimStart('\\', '/')
+
 let recognizeInput basePath input =
     match input with
     | x when (url.Match(x)).Success -> 
