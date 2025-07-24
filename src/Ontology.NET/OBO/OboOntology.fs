@@ -320,10 +320,29 @@ type OboOntology =
     /// </summary>
     /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
     /// <param name="basePath">Required when Import path is relative.</param>
-    /// <param name="oboOnto">The OboOntology whose Import section is parsed.</param>
+    /// <param name="oboOnto">The OboOntology whose Import section is parsed first.</param>
     /// <remarks>Note that the base path does not change which means that for relative paths all OBO ontologies must stem from the same relative directory.</remarks>
     static member importFromHeadersTransitively verbose basePath (oboOnto : OboOntology) =
         oboOnto.ImportFromHeadersTransitively(?verbose = verbose, ?basePath = basePath)
+
+    /// <summary>
+    /// Parses the Import-section from the header of the OboOntology and returns all parsed OboOntologies alongside the input OboOntology. Repeates this with the newly imported OboOntologies recursively.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    /// <remarks>Note that the base path does not change which means that for relative paths all OBO ontologies must stem from the same relative directory.</remarks>
+    member this.WithImportFromHeadersTransitively(?verbose, ?basePath) =
+        seq {this; yield! this.ImportFromHeaders(?verbose = verbose, ?basePath = basePath)}
+
+    /// <summary>
+    /// Parses the Import-section from the header of the given OboOntology and returns all parsed OboOntologies alongside the input OboOntology. Repeates this with the newly imported OboOntologies recursively.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    /// <param name="oboOnto">The OboOntology whose Import section is parsed first.</param>
+    /// <remarks>Note that the base path does not change which means that for relative paths all OBO ontologies must stem from the same relative directory.</remarks>
+    static member withImportFromHeadersTransitively verbose basePath (oboOnto : OboOntology) =
+        oboOnto.WithImportFromHeadersTransitively(?verbose = verbose, ?basePath = basePath)
 
     /// <summary>
     /// Returns the OboOntology's ID if it exists. Else assumes the reference ID to be that of the first given OboTerm.
