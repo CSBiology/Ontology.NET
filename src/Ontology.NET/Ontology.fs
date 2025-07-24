@@ -126,6 +126,25 @@ type Ontology() =
         FGraph.getNodes this
 
     /// <summary>
+    /// Updates the term under the given term ID with a given updated term.
+    /// </summary>
+    /// <param name="termId">The ID of the term which shall be updated.</param>
+    /// <param name="updatedTerm">The updated version of the term that shall replace the old version of it.</param>
+    member this.UpdateTerm(termId, updatedTerm) =
+        if updatedTerm.Accession <> termId then
+            raise (System.ArgumentException($"Term ID {termId} is not compatible to updated term ID {updatedTerm.Accession}. Use `.RemoveTerm` and `.AddTerm` to replace an old term with a new one if the term IDs are different."))
+        let sourceTerms, oldTerm, targetTerms = this[termId]
+        this[termId] <- (sourceTerms, updatedTerm, targetTerms)
+        this
+
+    /// <summary>
+    /// Removes the given term from the Ontology. Also removes all of its relations.
+    /// </summary>
+    /// <param name="term">The ID of the term that gets removed.</param>
+    member this.RemoveTerm(term) =
+        FGraph.removeNode term this :?> Ontology
+
+    /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
     /// </summary>
     /// <param name="sourceTerm">The ID of the term from which the relation originates.</param>
@@ -164,13 +183,6 @@ type Ontology() =
     /// </summary>
     member this.GetRelations() =
         FGraph.toEdgeSeq this
-
-    /// <summary>
-    /// Removes the given term from the Ontology. Also removes all of its relations.
-    /// </summary>
-    /// <param name="term">The ID of the term that gets removed.</param>
-    member this.RemoveTerm(term) =
-        FGraph.removeNode term this :?> Ontology
 
     /// <summary>
     /// Removes all relations from given source to target term. Relations directed vice versa (from target to source term) are unaffected.
@@ -644,8 +656,24 @@ type Ontology() =
     ///// </summary>
     ///// <param name="onto"></param>
     //member this.MergeWith(onto : Ontology) =
-    //    let newTerms = onto.
-
+    //    let newTerms = onto.GetTerms()
+    //    let newRelations = onto.GetRelations()
+    //    newTerms
+    //    |> Seq.iter (
+    //        fun (termId,cvTerm) ->
+    //            match this.TryGetTerm(termId) with
+    //            | None ->
+    //                this.AddTerm(cvTerm)
+    //                |> ignore
+    //            | Some oldCvTerm ->
+    //                if oldCvTerm.Name = "<missing>" then
+                        
+    //    )
+    //    newRelations
+    //    |> Seq.iter (
+    //        fun (sourceTermId,targetTermId,relations) ->
+                
+    //    )
 
     // SuperClass functionality:
 
@@ -778,6 +806,23 @@ type Ontology() =
         onto.GetTerms()
 
     /// <summary>
+    /// Updates the term under the given term ID with a given updated term.
+    /// </summary>
+    /// <param name="termId">The ID of the term which shall be updated.</param>
+    /// <param name="updatedTerm">The updated version of the term that shall replace the old version of it.</param>
+    /// <param name="onto">The Ontology on which the term shall be updated.</param>
+    static member updateTerm termId updatedTerm (onto : Ontology) =
+        onto.UpdateTerm(termId, updatedTerm)
+
+    /// <summary>
+    /// Removes the given term from the Ontology. Also removes all of its relations.
+    /// </summary>
+    /// <param name="term">The ID of the term that gets removed.</param>
+    /// <param name="onto">The Ontology from which the term shall be removed.</param>
+    static member removeTerm term (onto : Ontology) =
+        onto.RemoveTerm(term)
+
+    /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
     /// </summary>
     /// <param name="sourceTerm">The ID of the term from which the relation originates.</param>
@@ -802,14 +847,6 @@ type Ontology() =
     /// <param name="onto">The Ontology in which to look for the relation.</param>
     static member getRelations (onto : Ontology) =
         onto.GetRelations()
-
-    /// <summary>
-    /// Removes the given term from the Ontology. Also removes all of its relations.
-    /// </summary>
-    /// <param name="term">The ID of the term that gets removed.</param>
-    /// <param name="onto">The Ontology from which the term shall be removed.</param>
-    static member removeTerm term (onto : Ontology) =
-        onto.RemoveTerm(term)
 
     /// <summary>
     /// Removes all relations from given source to target term. Relations directed vice versa (from target to source term) are unaffected.
