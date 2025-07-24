@@ -660,9 +660,98 @@ type Ontology() =
 
     // accompanying static members (to existing object methods):
 
+    /// <summary>
+    /// Adds a CvTerm to the Ontology.
+    /// </summary>
+    /// <param name="term">The CvTerm that gets added to the Ontology.</param>
+    /// <param name="onto">The Ontology to which the term shall be added.</param>
+    static member addTerm term (onto : Ontology) =
+        onto.AddTerm(term)
+
+    /// <summary>
+    /// Returns the CvTerm under the given term ID.
+    /// </summary>
+    /// <param name="termId">The ID of the CvTerm that shall be returned.</param>
+    /// <param name="onto">The Ontology from which the term shall be retrieved.</param>
+    static member getTerm termId (onto : Ontology) =
+        onto.GetTerm(termId)
+
+    /// <summary>
+    /// Returns the CvTerm under the given term ID if it exists in the Ontology. Else returns None.
+    /// </summary>
+    /// <param name="termId">The ID of the CvTerm that shall be returned.</param>
+    /// <param name="onto">The Ontology from which the term shall be retrieved.</param>
+    static member tryGetTerm termId (onto : Ontology) =
+        onto.TryGetTerm(termId)
+
+    /// <summary>
+    /// Returns all terms of the Ontology.
+    /// </summary>
+    /// <param name="onto">The Ontology from which the terms shall be retrieved.</param>
+    static member getTerms (onto : Ontology) =
+        onto.GetTerms()
+
+    /// <summary>
+    /// Adds a relation of source term to target term to the Ontology.
+    /// </summary>
+    /// <param name="sourceTerm">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTerm">The ID of the term that is related to the source term.</param>
+    /// <param name="relation">The relation between both terms.</param>
+    /// <param name="onto">The Ontology in which the relation shall be added.</param>
+    static member addRelation sourceTerm targetTerm relation (onto : Ontology) =
+        onto.AddRelation(sourceTerm, targetTerm, relation)
+
+    /// <summary>
+    /// Returns the set of Relations from source to target term.
+    /// </summary>
+    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
+    /// <param name="onto">The Ontology in which to look for the relation.</param>
+    static member getRelation sourceTerm targetTerm (onto : Ontology) =
+        onto.GetRelation(sourceTerm, targetTerm)
+
+    /// <summary>
+    /// Removes the given term from the Ontology. Also removes all of its relations.
+    /// </summary>
+    /// <param name="term">The ID of the term that gets removed.</param>
+    /// <param name="onto">The Ontology from which the term shall be removed.</param>
+    static member removeTerm term (onto : Ontology) =
+        onto.RemoveTerm(term)
+
+    /// <summary>
+    /// Removes all relations from given source to target term. Relations directed vice versa (from target to source term) are unaffected.
+    /// </summary>
+    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
+    /// <param name="onto">The Ontology from which the relations shall be removed.</param>
+    static member removeRelations sourceTerm targetTerm (onto : Ontology) =
+        onto.RemoveRelations(sourceTerm, targetTerm)
+
+    /// <summary>
+    /// Removes the given relation from given source to target term. Relations directed vice versa (from target to source term) are unaffected.
+    /// </summary>
+    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
+    /// <param name="relation">The relation to be removed from the set of relations from source to target term.</param>
+    /// <param name="onto">The Ontology from which the relation shall be removed.</param>
+    static member removeRelation sourceTerm targetTerm relation (onto : Ontology) =
+        onto.RemoveRelation(sourceTerm, targetTerm, relation)
+
+    /// <summary>
     /// Returns the term IDs of all terms that have an Xref relation to the given term with the given Ontology.
+    /// </summary>
+    /// <param name="termId">The ID of the term whose Xrefs shall be returned.</param>
+    /// <param name="onto">The Ontology in which the term is located.</param>
     static member getXrefs termId (onto : Ontology) =
         onto.GetXrefs termId
+
+    /// <summary>
+    /// Returns the target relations of the given term as (target term ID * relations) sequence.
+    /// </summary>
+    /// <param name="termID">The ID of the term whose target relations shall be returned.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getTargetTermRelations termID (onto : Ontology) =
+        onto.GetTargetTermRelations(termID)
 
     /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
@@ -676,6 +765,15 @@ type Ontology() =
         onto.GetTargetTermsBy(termID, predicate)
 
     /// <summary>
+    /// Returns all terms and their Xref-related terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="predicate">A function that decides whether to traverse a relation.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getTargetTermsWithXrefsBy termID predicate (onto : Ontology) =
+        onto.GetTargetTermsWithXrefsBy(termID, predicate)
+
+    /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
@@ -684,6 +782,99 @@ type Ontology() =
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
     static member getTargetTermsWithDepth termID depth (onto : Ontology) =
         onto.GetTargetTermsWithDepth(termID, depth)
+
+    /// <summary>
+    /// Returns all terms and their Xref-related terms that are transitively target-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getTargetTermsWithXrefsWithDepth termID depth (onto : Ontology) =
+        onto.GetTargetTermsWithXrefsWithDepth(termID, depth)
+
+    /// <summary>
+    /// Returns all terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="predicate">A function that decides whether to traverse a relation.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getTargetTermsWithDepthBy termID depth predicate (onto : Ontology) =
+        onto.GetTargetTermsWithDepthBy(termID, depth, predicate)
+
+    /// <summary>
+    /// Returns all terms that and their Xref-related terms are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="predicate">A function that decides whether to traverse a relation.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getTargetTermsWithXrefsWithDepthBy termID depth predicate (onto : Ontology) =
+        onto.GetTargetTermsWithXrefsWithDepthBy(termID, depth, predicate)
+
+    /// <summary>
+    /// Returns the source relations of the given term as (source term ID * relations) sequence.
+    /// </summary>
+    /// <param name="termID">The ID of the term whose source relations shall be returned.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getSourceTermRelations termID (onto : Ontology) =
+        onto.GetSourceTermRelations(termID)
+
+    /// <summary>
+    /// Returns all terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="predicate">A function that decides whether to traverse a relation.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getSourceTermsBy termID predicate (onto : Ontology) =
+        onto.GetSourceTermsBy(termID, predicate)
+
+    /// <summary>
+    /// Returns all terms and their Xref-related terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="predicate">A function that decides whether to traverse a relation.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getSourceTermsWithXrefsBy termID predicate (onto : Ontology) =
+        onto.GetSourceTermsWithXrefsBy(termID, predicate)
+
+    /// <summary>
+    /// Returns all terms that are transitively source-related to the given term ID, but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getSourceTermsWithDepth termID depth (onto : Ontology) =
+        onto.GetSourceTermsWithDepth(termID, depth)
+
+    /// <summary>
+    /// Returns all terms and their Xref-related terms that are transitively source-related to the given term ID, but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getSourceTermsWithXrefsWithDepth termID depth (onto : Ontology) =
+        onto.GetSourceTermsWithXrefsWithDepth(termID, depth)
+
+    /// <summary>
+    /// Returns all terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="predicate">A function that decides whether to traverse a relation.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getSourceTermsWithDepthBy termID depth predicate (onto : Ontology) =
+        onto.GetSourceTermsWithDepthBy(termID, depth, predicate)
+
+    /// <summary>
+    /// Returns all terms and their Xref-related terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="predicate">A function that decides whether to traverse a relation.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    static member getSourceTermsWithXrefsWithDepthBy termID depth predicate (onto : Ontology) =
+        onto.GetSourceTermsWithXrefsWithDepthBy(termID, depth, predicate)
 
     /// <summary>
     /// Returns all terms that are transitively target-related via an is_a relation to the given term ID.
