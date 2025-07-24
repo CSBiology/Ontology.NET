@@ -120,6 +120,12 @@ type Ontology() =
         | :? KeyNotFoundException -> None
 
     /// <summary>
+    /// Returns all terms of the Ontology.
+    /// </summary>
+    member this.GetTerms() =
+        FGraph.getNodes this
+
+    /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
     /// </summary>
     /// <param name="sourceTerm">The ID of the term from which the relation originates.</param>
@@ -623,6 +629,16 @@ type Ontology() =
                                     visited.Add(xref) |> ignore
                             )
         }
+
+
+    // merge functionality:
+
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    ///// <param name="onto"></param>
+    //member this.MergeWith(onto : Ontology) =
+    //    let newTerms = onto.
 
 
     // SuperClass functionality:
