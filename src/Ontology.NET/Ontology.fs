@@ -249,18 +249,18 @@ type Ontology() =
     /// <param name="predicate">A function that takes the current term ID, the corresponding CvTerm, and its outgoing relations, and returns a boolean indicating whether traversal should follow that term.</param>
     /// <returns>A sequence of term IDs representing all target-related terms reachable by recursively following valid relations as defined by the predicate.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsBy(termID, predicate) =
+    member this.GetTargetTermsBy(termId, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string>()
 
-        stack.Push(termID)
-        visited.Add(termID) |> ignore
+        stack.Push(termId)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey = stack.Pop()
                 let (_, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 for kv in s do
@@ -277,18 +277,18 @@ type Ontology() =
     /// <param name="predicate">A function that takes the current term ID, the corresponding CvTerm, and its outgoing relations, and returns a boolean indicating whether traversal should follow that term.</param>
     /// <returns>A sequence of term IDs representing all target-related terms and their Xref-related terms reachable by recursively following valid relations as defined by the predicate.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsWithXrefsBy(termID, predicate) =
+    member this.GetTargetTermsWithXrefsBy(termId, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string>()
 
-        stack.Push(termID)
-        visited.Add(termID) |> ignore
+        stack.Push(termId)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey = stack.Pop()
                 let (_, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 for kv in s do
@@ -308,21 +308,21 @@ type Ontology() =
     /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
     /// <returns>A sequence of term IDs representing all target-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsWithDepth(termID, depth) =
+    member this.GetTargetTermsWithDepth(termId, depth) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
+        stack.Push(termId,0)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (_, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 if currDepth < depth then
@@ -335,21 +335,21 @@ type Ontology() =
     /// <summary>
     /// Returns all terms and their Xref-related terms that are transitively target-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
     /// <returns>A sequence of term IDs representing all target-related terms and their Xref-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsWithXrefsWithDepth(termID, depth) =
+    member this.GetTargetTermsWithXrefsWithDepth(termId, depth) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
+        stack.Push(termId,0)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (_, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 if currDepth < depth then
@@ -369,21 +369,21 @@ type Ontology() =
     /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
     /// <returns>A sequence of term IDs representing all target-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsWithDepthBy(termID, depth, predicate) =
+    member this.GetTargetTermsWithDepthBy(termId, depth, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
+        stack.Push(termId,0)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (_, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 if currDepth < depth then
@@ -397,21 +397,21 @@ type Ontology() =
     /// <summary>
     /// Returns all terms that and their Xref-related terms are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
     /// <returns>A sequence of term IDs representing all target-related terms and their Xref-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    member this.GetTargetTermsWithXrefsWithDepthBy(termID, depth, predicate) =
+    member this.GetTargetTermsWithXrefsWithDepthBy(termId, depth, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
+        stack.Push(termId,0)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (_, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 if currDepth < depth then
@@ -437,8 +437,8 @@ type Ontology() =
     /// </summary>
     /// <param name="termID">The ID of the term whose source relations shall be returned.</param>
     /// <remarks>Source relations to the given term look like this: "source term -> given term"</remarks>
-    member this.GetSourceTermRelations(termID) =
-        this[termID]
+    member this.GetSourceTermRelations(termId) =
+        this[termId]
         |> fun (p,_,_) -> 
             p
             |> Seq.map (fun e -> e.Key, e.Value)
@@ -450,18 +450,18 @@ type Ontology() =
     /// <param name="predicate">A function that takes the current term ID, the corresponding CvTerm, and its outgoing relations, and returns a boolean indicating whether traversal should follow that term.</param>
     /// <returns>A sequence of term IDs representing all source-related terms reachable by recursively following valid relations as defined by the predicate.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsBy(termID, predicate) =
+    member this.GetSourceTermsBy(termId, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string>()
 
-        stack.Push(termID)
-        visited.Add(termID) |> ignore
+        stack.Push(termId)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey = stack.Pop()
                 let (p, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 for kv in p do
@@ -478,18 +478,18 @@ type Ontology() =
     /// <param name="predicate">A function that takes the current term ID, the corresponding CvTerm, and its outgoing relations, and returns a boolean indicating whether traversal should follow that term.</param>
     /// <returns>A sequence of term IDs representing all source-related terms and their Xref-related terms reachable by recursively following valid relations as defined by the predicate.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsWithXrefsBy(termID, predicate) =
+    member this.GetSourceTermsWithXrefsBy(termId, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string>()
 
-        stack.Push(termID)
-        visited.Add(termID) |> ignore
+        stack.Push(termId)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey = stack.Pop()
                 let (p, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 for kv in p do
@@ -512,18 +512,18 @@ type Ontology() =
     /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
     /// <returns>A sequence of term IDs representing all source-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsWithDepth(termID, depth) =
+    member this.GetSourceTermsWithDepth(termId, depth) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
+        stack.Push(termId,0)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (p, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 if currDepth < depth then
@@ -536,21 +536,21 @@ type Ontology() =
     /// <summary>
     /// Returns all terms and their Xref-related terms that are transitively source-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
     /// <returns>A sequence of term IDs representing all source-related terms and their Xref-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsWithXrefsWithDepth(termID, depth) =
+    member this.GetSourceTermsWithXrefsWithDepth(termId, depth) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
+        stack.Push(termId,0)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (p, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 if currDepth < depth then
@@ -570,21 +570,21 @@ type Ontology() =
     /// <summary>
     /// Returns all terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
     /// <returns>A sequence of term IDs representing all source-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsWithDepthBy(termID, depth, predicate) =
+    member this.GetSourceTermsWithDepthBy(termId, depth, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
+        stack.Push(termId,0)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (p, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 if currDepth < depth then
@@ -598,21 +598,21 @@ type Ontology() =
     /// <summary>
     /// Returns all terms and their Xref-related terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
     /// <returns>A sequence of term IDs representing all source-related terms and their Xref-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B.</remarks>
-    member this.GetSourceTermsWithXrefsWithDepthBy(termID, depth, predicate) =
+    member this.GetSourceTermsWithXrefsWithDepthBy(termId, depth, predicate) =
         let visited = HashSet<string>()
         let stack = Stack<string * int>()
 
-        stack.Push(termID,0)
-        visited.Add(termID) |> ignore
+        stack.Push(termId,0)
+        visited.Add(termId) |> ignore
 
         seq {
             while stack.Count > 0 do
                 let nodeKey, currDepth = stack.Pop()
                 let (p, nd, s) = this[nodeKey]
-                if nodeKey <> termID then
+                if nodeKey <> termId then
                     yield nodeKey
 
                 if currDepth < depth then
@@ -644,21 +644,101 @@ type Ontology() =
     // SuperClass functionality:
 
     /// <summary>
-    /// Returns all terms that are transitively target-related via an is_a relation to the given term ID.
+    /// Returns all terms that are target-related via an is_a relation to the given term ID.
     /// </summary>
     /// <param name="termID">The ID of the starting term.</param>
     /// <returns>A sequence of term IDs representing all is_a target-related terms.</returns>
-    member this.GetSuperClassesTransitively(termID) =
-        this.GetTargetTermsBy(termID, fun _ _ e -> Set.contains IsA e)
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A. If "->" is an is_a relation, Term B is the superclass of Term A.</remarks>
+    member this.GetSuperClasses(termId) =
+        FContext.successors this[termId]
+        |> Seq.choose (
+            fun (tid,r) ->
+                if Set.contains IsA r then
+                    Some tid
+                else None
+        )
+
+    /// <summary>
+    /// Returns all terms that are transitively target-related via an is_a relation to the given term ID.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a target-related terms.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A. If "->" is an is_a relation, Term B is the superclass of Term A.</remarks>
+    member this.GetSuperClassesTransitively(termId) =
+        this.GetTargetTermsBy(termId, fun _ _ e -> Set.contains IsA e)
+
+    /// <summary>
+    /// Returns all terms and their xref-related terms that are transitively target-related via an is_a relation to the given term ID.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a target-related terms and their xref-related terms.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A. If "->" is an is_a relation, Term B is the superclass of Term A.</remarks>
+    member this.GetSuperClassesWithXrefsTransitively(termId) =
+        this.GetTargetTermsWithXrefsBy(termId, fun _ _ e -> Set.contains IsA e)
+
+    /// <summary>
+    /// Returns all terms that are transitively target-related via an is_a relation to the given term ID but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a target-related terms that can be reached within the given depth.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A. If "->" is an is_a relation, Term B is the superclass of Term A.</remarks>
+    member this.GetSuperClassesWithDepthTransitively(termId, depth) =
+        this.GetTargetTermsWithDepthBy(termId, depth, fun _ _ e -> Set.contains IsA e)
+
+    /// <summary>
+    /// Returns all terms and their xref-related terms that are transitively target-related via an is_a relation to the given term ID but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a target-related terms and their xref-related terms that can be reached within the given depth.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A. If "->" is an is_a relation, Term B is the superclass of Term A.</remarks>
+    member this.GetSuperClassesWithXrefsWithDepthTransitively(termId, depth) =
+        this.GetTargetTermsWithXrefsWithDepthBy(termId, depth, fun _ _ e -> Set.contains IsA e)
 
 
     // SubClass functionality:
 
-    member this.GetSubClassesTransitively(termID) =
-        FContext.predecessors this[termID]
+    /// <summary>
+    /// Returns all terms that are transitively source-related via an is_a relation to the given term ID.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a source-related terms.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
+    member this.GetSubClassesTransitively(termId) =
+        this.GetSourceTermsBy(termId, fun _ _ e -> Set.contains IsA e)
+
+    /// <summary>
+    /// Returns all terms and their xrefs-related terms that are transitively source-related via an is_a relation to the given term ID.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a source-related terms and their xref-related terms.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
+    member this.GetSubClassesWithXrefsTransitively(termId) =
+        this.GetSourceTermsWithXrefsBy(termId, fun _ _ e -> Set.contains IsA e)
+
+    /// <summary>
+    /// Returns all terms that are transitively source-related via an is_a relation to the given term ID but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a source-related terms that can be reached within the given depth.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
+    member this.GetSubClassesWithDepthTransitively(termId, depth) =
+        this.GetSourceTermsWithDepthBy(termId, depth, fun _ _ e -> Set.contains IsA e)
+
+    /// <summary>
+    /// Returns all terms that and their xrefs-related terms are transitively source-related via an is_a relation to the given term ID but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a source-related terms and their xref-related terms that can be reached within the given depth.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
+    member this.GetSubClassesWithDepthWithXrefsTransitively(termId, depth) =
+        this.GetSourceTermsWithXrefsWithDepthBy(termId, depth, fun _ _ e -> Set.contains IsA e)
 
 
-    // accompanying static members (to existing object methods):
+    // accompanying static members (to existing instance methods):
 
     /// <summary>
     /// Adds a CvTerm to the Ontology.
@@ -750,8 +830,8 @@ type Ontology() =
     /// </summary>
     /// <param name="termID">The ID of the term whose target relations shall be returned.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getTargetTermRelations termID (onto : Ontology) =
-        onto.GetTargetTermRelations(termID)
+    static member getTargetTermRelations termId (onto : Ontology) =
+        onto.GetTargetTermRelations(termId)
 
     /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
@@ -761,8 +841,8 @@ type Ontology() =
     /// <param name="onto">The Ontology on which the operation is performed.</param>
     /// <returns>A sequence of term IDs and corresponding CvTerms representing all target-related terms reachable by recursively following valid relations as defined by the predicate.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    static member getTargetTermsBy termID predicate (onto : Ontology) =
-        onto.GetTargetTermsBy(termID, predicate)
+    static member getTargetTermsBy termId predicate (onto : Ontology) =
+        onto.GetTargetTermsBy(termId, predicate)
 
     /// <summary>
     /// Returns all terms and their Xref-related terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
@@ -770,18 +850,18 @@ type Ontology() =
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="predicate">A function that decides whether to traverse a relation.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getTargetTermsWithXrefsBy termID predicate (onto : Ontology) =
-        onto.GetTargetTermsWithXrefsBy(termID, predicate)
+    static member getTargetTermsWithXrefsBy termId predicate (onto : Ontology) =
+        onto.GetTargetTermsWithXrefsBy(termId, predicate)
 
     /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.</summary>
     /// <param name="termID">The ID of the starting term.</param>
-    /// <param name="depth">The maximum depth to traverse. A depth of 0 returns only the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
     /// <returns>A sequence of term IDs and corresponding CvTerms representing all target-related terms that can be reached within the given depth, where depth corresponds to the number of relation steps (edges) from the starting term.</returns>
     /// <remarks>A target relation is an outgoing relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A.</remarks>
-    static member getTargetTermsWithDepth termID depth (onto : Ontology) =
-        onto.GetTargetTermsWithDepth(termID, depth)
+    static member getTargetTermsWithDepth termId depth (onto : Ontology) =
+        onto.GetTargetTermsWithDepth(termId, depth)
 
     /// <summary>
     /// Returns all terms and their Xref-related terms that are transitively target-related to the given term ID, but limits the traversal to the specified depth. The traversal is performed depth-first.
@@ -789,8 +869,8 @@ type Ontology() =
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="depth">The maximum depth to traverse.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getTargetTermsWithXrefsWithDepth termID depth (onto : Ontology) =
-        onto.GetTargetTermsWithXrefsWithDepth(termID, depth)
+    static member getTargetTermsWithXrefsWithDepth termId depth (onto : Ontology) =
+        onto.GetTargetTermsWithXrefsWithDepth(termId, depth)
 
     /// <summary>
     /// Returns all terms that are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth.
@@ -799,8 +879,8 @@ type Ontology() =
     /// <param name="depth">The maximum depth to traverse.</param>
     /// <param name="predicate">A function that decides whether to traverse a relation.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getTargetTermsWithDepthBy termID depth predicate (onto : Ontology) =
-        onto.GetTargetTermsWithDepthBy(termID, depth, predicate)
+    static member getTargetTermsWithDepthBy termId depth predicate (onto : Ontology) =
+        onto.GetTargetTermsWithDepthBy(termId, depth, predicate)
 
     /// <summary>
     /// Returns all terms that and their Xref-related terms are transitively target-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth.
@@ -809,16 +889,16 @@ type Ontology() =
     /// <param name="depth">The maximum depth to traverse.</param>
     /// <param name="predicate">A function that decides whether to traverse a relation.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getTargetTermsWithXrefsWithDepthBy termID depth predicate (onto : Ontology) =
-        onto.GetTargetTermsWithXrefsWithDepthBy(termID, depth, predicate)
+    static member getTargetTermsWithXrefsWithDepthBy termId depth predicate (onto : Ontology) =
+        onto.GetTargetTermsWithXrefsWithDepthBy(termId, depth, predicate)
 
     /// <summary>
     /// Returns the source relations of the given term as (source term ID * relations) sequence.
     /// </summary>
     /// <param name="termID">The ID of the term whose source relations shall be returned.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getSourceTermRelations termID (onto : Ontology) =
-        onto.GetSourceTermRelations(termID)
+    static member getSourceTermRelations termId (onto : Ontology) =
+        onto.GetSourceTermRelations(termId)
 
     /// <summary>
     /// Returns all terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
@@ -826,8 +906,8 @@ type Ontology() =
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="predicate">A function that decides whether to traverse a relation.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getSourceTermsBy termID predicate (onto : Ontology) =
-        onto.GetSourceTermsBy(termID, predicate)
+    static member getSourceTermsBy termId predicate (onto : Ontology) =
+        onto.GetSourceTermsBy(termId, predicate)
 
     /// <summary>
     /// Returns all terms and their Xref-related terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true. The traversal is performed depth-first.
@@ -835,8 +915,8 @@ type Ontology() =
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="predicate">A function that decides whether to traverse a relation.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getSourceTermsWithXrefsBy termID predicate (onto : Ontology) =
-        onto.GetSourceTermsWithXrefsBy(termID, predicate)
+    static member getSourceTermsWithXrefsBy termId predicate (onto : Ontology) =
+        onto.GetSourceTermsWithXrefsBy(termId, predicate)
 
     /// <summary>
     /// Returns all terms that are transitively source-related to the given term ID, but limits the traversal to the specified depth.
@@ -844,8 +924,8 @@ type Ontology() =
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="depth">The maximum depth to traverse.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getSourceTermsWithDepth termID depth (onto : Ontology) =
-        onto.GetSourceTermsWithDepth(termID, depth)
+    static member getSourceTermsWithDepth termId depth (onto : Ontology) =
+        onto.GetSourceTermsWithDepth(termId, depth)
 
     /// <summary>
     /// Returns all terms and their Xref-related terms that are transitively source-related to the given term ID, but limits the traversal to the specified depth.
@@ -853,8 +933,8 @@ type Ontology() =
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="depth">The maximum depth to traverse.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getSourceTermsWithXrefsWithDepth termID depth (onto : Ontology) =
-        onto.GetSourceTermsWithXrefsWithDepth(termID, depth)
+    static member getSourceTermsWithXrefsWithDepth termId depth (onto : Ontology) =
+        onto.GetSourceTermsWithXrefsWithDepth(termId, depth)
 
     /// <summary>
     /// Returns all terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth.
@@ -863,8 +943,8 @@ type Ontology() =
     /// <param name="depth">The maximum depth to traverse.</param>
     /// <param name="predicate">A function that decides whether to traverse a relation.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getSourceTermsWithDepthBy termID depth predicate (onto : Ontology) =
-        onto.GetSourceTermsWithDepthBy(termID, depth, predicate)
+    static member getSourceTermsWithDepthBy termId depth predicate (onto : Ontology) =
+        onto.GetSourceTermsWithDepthBy(termId, depth, predicate)
 
     /// <summary>
     /// Returns all terms and their Xref-related terms that are transitively source-related to the given term ID, following only those relations for which the provided predicate returns true but limits the traversal to the specified depth.
@@ -873,14 +953,89 @@ type Ontology() =
     /// <param name="depth">The maximum depth to traverse.</param>
     /// <param name="predicate">A function that decides whether to traverse a relation.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
-    static member getSourceTermsWithXrefsWithDepthBy termID depth predicate (onto : Ontology) =
-        onto.GetSourceTermsWithXrefsWithDepthBy(termID, depth, predicate)
+    static member getSourceTermsWithXrefsWithDepthBy termId depth predicate (onto : Ontology) =
+        onto.GetSourceTermsWithXrefsWithDepthBy(termId, depth, predicate)
 
     /// <summary>
     /// Returns all terms that are transitively target-related via an is_a relation to the given term ID.
     /// </summary>
     /// <param name="termID">The ID of the starting term.</param>
     /// <param name="onto">The Ontology on which the operation is performed.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
     /// <returns>A sequence of term IDs representing all is_a target-related terms.</returns>
-    static member getSuperClassesTransitively termID (onto : Ontology) =
-        onto.GetSuperClassesTransitively(termID)
+    static member getSuperClassesTransitively termId (onto : Ontology) =
+        onto.GetSuperClassesTransitively(termId)
+
+    /// <summary>
+    /// Returns all terms and their xref-related terms that are transitively target-related via an is_a relation to the given term ID.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a target-related terms and their xref-related terms.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A. If "->" is an is_a relation, Term B is the superclass of Term A.</remarks>
+    static member getSuperClassesWithXrefsTransitively termID (onto : Ontology) =
+        onto.GetSuperClassesWithXrefsTransitively(termID)
+
+    /// <summary>
+    /// Returns all terms that are transitively target-related via an is_a relation to the given term ID but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a target-related terms that can be reached within the given depth.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A. If "->" is an is_a relation, Term B is the superclass of Term A.</remarks>
+    static member getSuperClassesWithDepthTransitively termID depth (onto : Ontology) =
+        onto.GetSuperClassesWithDepthTransitively(termID, depth)
+
+    /// <summary>
+    /// Returns all terms and their xref-related terms that are transitively target-related via an is_a relation to the given term ID but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a target-related terms and their xref-related terms that can be reached within the given depth.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term B is the target-related term to Term A. If "->" is an is_a relation, Term B is the superclass of Term A.</remarks>
+    static member getSuperClassesWithXrefsWithDepthTransitively termID depth (onto : Ontology) =
+        onto.GetSuperClassesWithXrefsWithDepthTransitively(termID, depth)
+
+    /// <summary>
+    /// Returns all terms that are transitively source-related via an is_a relation to the given term ID.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a source-related terms.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
+    static member getSubClassesTransitively termId (onto : Ontology) =
+        onto.GetSubClassesTransitively(termId)
+
+    /// <summary>
+    /// Returns all terms and their xrefs-related terms that are transitively source-related via an is_a relation to the given term ID.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    /// <returns>A sequence of term IDs representing all is_a source-related terms and their xref-related terms.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
+    static member getSubClassesWithXrefsTransitively termID (onto : Ontology) =
+        onto.GetSubClassesWithXrefsTransitively(termID)
+
+    /// <summary>
+    /// Returns all terms that are transitively source-related via an is_a relation to the given term ID but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a source-related terms that can be reached within the given depth.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
+    static member getSubClassesWithDepthTransitively termID depth (onto : Ontology) =
+        onto.GetSubClassesWithDepthTransitively(termID, depth)
+
+    /// <summary>
+    /// Returns all terms that and their xrefs-related terms are transitively source-related via an is_a relation to the given term ID but limits the traversal to the specified depth.
+    /// </summary>
+    /// <param name="termID">The ID of the starting term.</param>
+    /// <param name="depth">The maximum depth to traverse.</param>
+    /// <param name="onto">The Ontology on which the operation is performed.</param>
+    /// <returns>A sequence of term IDs representing all transitively is_a source-related terms and their xref-related terms that can be reached within the given depth.</returns>
+    /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
+    static member getSubClassesWithDepthWithXrefsTransitively termID depth (onto : Ontology) =
+        onto.GetSubClassesWithDepthWithXrefsTransitively(termID, depth)
