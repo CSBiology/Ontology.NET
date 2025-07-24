@@ -120,7 +120,7 @@ type Ontology() =
         | :? KeyNotFoundException -> None
 
     /// <summary>
-    /// Returns all terms of the Ontology.
+    /// Returns all terms of the Ontology as a sequence of term ID * term (as CvTerm).
     /// </summary>
     member this.GetTerms() =
         FGraph.getNodes this
@@ -158,6 +158,12 @@ type Ontology() =
         //match FGraph.tryFindEdge sourceTerm targetTerm this with
         //| Some (_,_,e) -> e
         //| None -> raise (System.ArgumentException($"There is no relation from source terms {sourceTerm} to target term {targetTerm} in the Ontology."))
+
+    /// <summary>
+    /// Returns all relations of the Ontology as a sequence of source term ID * target term ID * relations.
+    /// </summary>
+    member this.GetRelations() =
+        FGraph.toEdgeSeq this
 
     /// <summary>
     /// Removes the given term from the Ontology. Also removes all of its relations.
@@ -789,6 +795,13 @@ type Ontology() =
     /// <param name="onto">The Ontology in which to look for the relation.</param>
     static member getRelation sourceTerm targetTerm (onto : Ontology) =
         onto.GetRelation(sourceTerm, targetTerm)
+
+    /// <summary>
+    /// Returns all relations of the Ontology as a sequence of source term ID * target term ID * relations.
+    /// </summary>
+    /// <param name="onto">The Ontology in which to look for the relation.</param>
+    static member getRelations (onto : Ontology) =
+        onto.GetRelations()
 
     /// <summary>
     /// Removes the given term from the Ontology. Also removes all of its relations.
