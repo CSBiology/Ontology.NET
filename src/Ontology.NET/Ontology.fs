@@ -45,7 +45,9 @@ type Ontology() =
 
     // parsing functionality:
 
-    /// <summary>Takes a given OboOntology and transforms it into an Ontology, with the term IDs as node keys, the terms as CvTerms as node data and the relations as edges.</summary>
+    /// <summary>
+    /// Takes a given OboOntology and transforms it into an Ontology, with the term IDs as node keys, the terms as CvTerms as node data and the relations as edges.
+    /// </summary>
     /// <remarks>If a relation points to a term that is not present in the given OboOntology, initializes them as new CvTerms but with name and ref = "&lt;missing&gt;".</remarks>
     static member fromOboOntology (oboOnto : OboOntology) =
 
@@ -90,6 +92,30 @@ type Ontology() =
         )
 
         onto
+
+    /// <summary>
+    /// Imports all OboOntologies from the headers of the given one, transforms them into Ontologies and merges them.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    /// <param name="oboOnto">The OboOntology whose Imports are parsed.</param>
+    /// <remarks>Note that the base path does not change which means that for relative paths all OBO ontologies must stem from the same relative directory.</remarks>
+    static member fromOboOntologyWithImportsFromHeaders verbose basePath (oboOnto : OboOntology) =
+        oboOnto.WithImportsFromHeaders(?verbose = verbose, ?basePath = basePath)
+        |> Seq.map Ontology.fromOboOntology
+        |> Ontology.mergeAll
+
+    /// <summary>
+    /// Imports all OboOntologies transitively from the headers of the given one, transforms them into Ontologies and merges them.
+    /// </summary>
+    /// <param name="verbose">Optional. If true, gives verbose information when parsing. Default is false.</param>
+    /// <param name="basePath">Required when Import path is relative.</param>
+    /// <param name="oboOnto">The OboOntology whose Imports are parsed.</param>
+    /// <remarks>Note that the base path does not change which means that for relative paths all OBO ontologies must stem from the same relative directory.</remarks>
+    static member fromOboOntologyWithImportsFromHeadersTransitively verbose basePath (oboOnto : OboOntology) =
+        oboOnto.WithImportsFromHeadersTransitively(?verbose = verbose, ?basePath = basePath)
+        |> Seq.map Ontology.fromOboOntology
+        |> Ontology.mergeAll
 
 
     // basic functionality:
@@ -649,32 +675,6 @@ type Ontology() =
         }
 
 
-    // merge functionality:
-
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    ///// <param name="onto"></param>
-    //member this.MergeWith(onto : Ontology) =
-    //    let newTerms = onto.GetTerms()
-    //    let newRelations = onto.GetRelations()
-    //    newTerms
-    //    |> Seq.iter (
-    //        fun (termId,cvTerm) ->
-    //            match this.TryGetTerm(termId) with
-    //            | None ->
-    //                this.AddTerm(cvTerm)
-    //                |> ignore
-    //            | Some oldCvTerm ->
-    //                if oldCvTerm.Name = "<missing>" then
-                        
-    //    )
-    //    newRelations
-    //    |> Seq.iter (
-    //        fun (sourceTermId,targetTermId,relations) ->
-                
-    //    )
-
     // SuperClass functionality:
 
     /// <summary>
@@ -771,6 +771,58 @@ type Ontology() =
     member this.GetSubClassesWithDepthWithXrefsTransitively(termId, depth) =
         this.GetSourceTermsWithXrefsWithDepthBy(termId, depth, fun _ _ e -> Set.contains IsA e)
 
+
+    // merge functionality:
+
+    /// <summary>
+    /// Merges this Ontology with the given one. If this Ontology has xref terms with missing information that are present in the given Ontology, updates those xref terms accordingly.
+    /// </summary>
+    /// <param name="onto">The Ontology that gets merged into this one.</param>
+    member this.MergeWith(onto : Ontology) =
+        let newTerms = onto.GetTerms()
+        let newRelations = onto.GetRelations()
+        newTerms
+        |> Seq.iter (
+            fun (termId,cvTerm) ->
+                match this.TryGetTerm(termId) with
+                | None ->
+                    this.AddTerm(cvTerm)
+                    |> ignore
+                | Some oldCvTerm ->
+                    if oldCvTerm.Name = "<missing>" then
+                        this.UpdateTerm(termId, cvTerm)
+                        |> ignore
+        )
+        newRelations
+        |> Seq.iter (
+            fun (sourceTermId,targetTermId,relations) ->
+                relations
+                |> Seq.iter (
+                    fun relation ->
+                        this.AddRelation(sourceTermId, targetTermId, relation)
+                        |> ignore
+                )
+        )
+        this
+
+
+    // additional static methods:
+
+    /// <summary>
+    /// Merges 2 given Ontologies. If ther first Ontology has xref terms with missing information that are present in the second Ontology, updates those xref terms accordingly.
+    /// </summary>
+    /// <param name="onto1">The Ontology that gets the second one merged into it.</param>
+    /// <param name="onto2">The Ontology that gets merged into the first one.</param>
+    static member merge (onto1 : Ontology) (onto2 : Ontology) =
+        onto1.MergeWith(onto2)
+
+    /// <summary>
+    /// Merges all given Ontologies into one.
+    /// </summary>
+    /// <param name="ontos">A collection of Ontologies that shall be merged into one.</param>
+    static member mergeAll (ontos : Ontology seq) =
+        ontos
+        |> Seq.reduce (Ontology.merge)
 
     // accompanying static members (to existing instance methods):
 

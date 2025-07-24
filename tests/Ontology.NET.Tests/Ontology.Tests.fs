@@ -222,4 +222,35 @@ module OntologyTests =
                     Expect.sequenceEqual actual expected "Source terms and/or their Xrefs differ"
             ]
 
+            testList "MergeWith" [
+                testCase "merges Ontologies correctly" <| fun _ ->
+                    let testOnto1 =
+                        let o = Ontology()
+                        [CvTerm.create("TO1:1", "test1", "TO1"); CvTerm.create("TO1:2", "test2", "TO1"); CvTerm.create("TO3:1", "<missing>", "<missing>"); CvTerm.create("TO2:1", "<missing>", "<missing>")]
+                        |> List.iter (fun termId -> o.AddTerm(termId) |> ignore)
+                        ["TO1:1", "TO1:2", IsA; "TO1:1", "TO3:1", Xref; "TO1:1", "TO2:1", Xref]
+                        |> List.map o.AddRelation
+                        |> ignore
+                        o
+                    let testOnto2 =
+                        let o = Ontology()
+                        [CvTerm.create("TO2:1", "test1", "TO2"); CvTerm.create("TO2:2", "test2", "TO2"); CvTerm.create("TO3:1", "<missing>", "<missing>")]
+                        |> List.iter (fun termId -> o.AddTerm(termId) |> ignore)
+                        ["TO2:1", "TO2:2", Custom "has_a"; "TO2:1", "TO3:1", Xref]
+                        |> List.map o.AddRelation
+                        |> ignore
+                        o
+                    let res = testOnto1.MergeWith(testOnto2)
+                    let actual1 = res.GetTerms() |> Seq.toList
+                    let actual2 = res.GetRelations() |> Seq.toList
+                    let expected1 = [
+                        "TO1:1", CvTerm.create("TO1:1", "test1", "TO1"); "TO1:2", CvTerm.create("TO1:2", "test2", "TO1"); "TO3:1", CvTerm.create("TO3:1", "<missing>", "<missing>"); "TO2:1", CvTerm.create("TO2:1", "test1", "TO2"); "TO2:2", CvTerm.create("TO2:2", "test2", "TO2")
+                    ]
+                    let expected2 = [
+                        ("TO1:1", "TO1:2", set [IsA]); ("TO1:1", "TO3:1", set [Xref]); ("TO1:1", "TO2:1", set [Xref]); ("TO2:1", "TO2:2", set [Custom "has_a"]); ("TO2:1", "TO3:1", set [Xref])
+                    ]
+                    Expect.sequenceEqual actual1 expected1 "Terms differ"
+                    Expect.sequenceEqual actual2 expected2 "Relations differ"
+            ]
+
         ]
