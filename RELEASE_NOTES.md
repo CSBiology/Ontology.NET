@@ -1,4 +1,4 @@
-### 0.0.1+983f2a6 (Released 2025-7-25)
+### 0.0.0-preview.1+983f2a6 (Released 2025-7-25)
 * Additions:
     * [[#2feba3d](https://github.com/CSBiology/Ontology.NET/commit/2feba3d3ff76d88c46b4bfb685518044060ef5f3)] Initial commit
     * [[#73d873f](https://github.com/CSBiology/Ontology.NET/commit/73d873fc75ec002227f97a2b180862b2d60837f7)] Add build project
