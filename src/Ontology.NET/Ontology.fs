@@ -824,7 +824,8 @@ type Ontology() =
         ontos
         |> Seq.reduce (Ontology.merge)
 
-    // accompanying static members (to existing instance methods):
+
+    // accompanying static methods (to existing instance methods):
 
     /// <summary>
     /// Adds a CvTerm to the Ontology.
