@@ -8,7 +8,7 @@ let project = "Ontology.NET"
 
 let testProjects = 
     [
-        "tests/Ontology.NET.Tests/OBO.NET.Tests.fsproj"
+        "tests/Ontology.NET.Tests/Ontology.NET.Tests.fsproj"
     ]
 
 let solutionFile  = $"{project}.sln"
