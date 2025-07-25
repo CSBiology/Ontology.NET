@@ -7,29 +7,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ControlledVocabulary\ControlledVocabulary.fsproj" />
+    <ProjectReference Include="..\Ontology.NET\Ontology.NET.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharpAux" Version="[2.0.0]" />
-    <PackageReference Include="Graphoscope" Version="[0.6.0-preview.1]" />
+    <PackageReference Include="ARCtrl.Core" Version="[2.5.1]" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="TypeProviderDeps\ProvidedTypes.fsi" />
-    <Compile Include="TypeProviderDeps\ProvidedTypes.fs" />
-    <Compile Include="GraphoscopeAux.fs" />
-    <Compile Include="ImportAux.fs" />
-    <Compile Include="OBO\DBXRef.fs" />
-    <Compile Include="OBO\TermSynonym.fs" />
-    <Compile Include="OBO\OboTerm.fs" />
-    <Compile Include="OBO\OboTypedef.fs" />
-    <Compile Include="OBO\OboEntry.fs" />
-    <Compile Include="OBO\OboEntries.fs" />
-    <Compile Include="OBO\OboOntology.fs" />
-    <Compile Include="OBO\OboProvider.fs" />
-    <Compile Include="OntologyRelation.fs" />
-    <Compile Include="Ontology.fs" />
+    <Compile Include="OBO\OboTermExtensions.fs" />
+    <Compile Include="OBO\OboOntologyExtensions.fs" />
   </ItemGroup>
 
   <PropertyGroup>

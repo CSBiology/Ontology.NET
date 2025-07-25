@@ -1,0 +1,30 @@
+format-version: 0.0.1
+data-version: 0.0.1
+ontology: TO5
+date: 01:01:1970 00:00
+saved-by: Oliver Maus
+auto-generated-by: TalkGPT
+import: /testOboFile3.obo
+import: /testOboFile4.obo
+import: /testOboFile6.obo
+treat-xrefs-as-equivalent: TO3
+treat-xrefs-as-equivalent: TO4
+treat-xrefs-as-equivalent: TO6
+
+
+[Term]
+id: TO5:01
+name: testTerm1
+xref: TO4:1
+xref: TO6:1
+is_a: TO5:02
+
+[Term]
+id: TO5:02
+name: testTerm2
+is_a: TO5:03
+
+[Term]
+id: TO5:03
+name: testTerm3
+relationship: not TO5:02
