@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="README.md" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="TypeProviderDeps\ProvidedTypes.fsi" />
     <Compile Include="TypeProviderDeps\ProvidedTypes.fs" />
@@ -31,6 +32,8 @@
     <Compile Include="OntologyRelation.fs" />
     <Compile Include="Ontology.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 
   <PropertyGroup>
     <Authors>Heinrich Lukas Weil, Oliver Maus, F# open source contributors</Authors>
