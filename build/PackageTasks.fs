@@ -53,6 +53,7 @@ let packPrerelease = BuildTask.create "PackPrerelease" [setPrereleaseTag; clean;
                                     "Version", prereleaseTag
                                     "PackageReleaseNotes",  (release.Notes |> List.map replaceCommitLink  |> String.toLines )
                                 ] @ p.MSBuildParams.Properties)
+                                DisableInternalBinLog = true
                             }
                         {
                             p with 
