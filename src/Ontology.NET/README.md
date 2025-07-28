@@ -24,23 +24,7 @@ This allows modeling real-world ontologies in a graph structure where terms are 
 Let's assume that `"TEST:1"` is a subclass of `"TEST:2"` and that it has a cross-reference to `"CHEBI:12345"`.  
 (Cross-references (Xrefs) are often used to depict synonymous terms across different ontologies)
 
-```mermaid
-flowchart BT
-    T1["TEST:1<br/>(my term)"]
-    C1["CHEBI:12345<br/>(xref to CHEBI)"]
-    T2["TEST:2<br/>(parent term)"]
-
-    T1 -->|is_a| T2
-    %%T1 -.->|xref| C1
-```
-
-```mermaid
-graph LR
-    T1["TEST:1<br/>(my term)"]
-    C1["CHEBI:12345<br/>(xref to CHEBI)"]
-
-    T1 -.->|xref| C1
-```
+![ ](https://github.com/CSBiology/Ontology.NET/blob/main/docs/img/readme_ontology_example1.png)
 
 ## Getting started
 
