@@ -135,7 +135,7 @@ module OboOntologyTests =
                     Expect.equal (Option.map (fun o -> o.Terms) testFile1) termsExpected "Terms did not match"
                 testCase "reads Typedefs correctly" <| fun _ ->
                     let typedefsExpected = List.init 2 (fun i -> OboTypedef.Create($"Test:000{i + 3}", "", "")) |> Some
-                    Expect.equal (Option.map (fun o -> o.TypeDefs) testFile1) typedefsExpected "Terms did not match"
+                    Expect.equal (Option.map (fun o -> o.Typedefs) testFile1) typedefsExpected "Terms did not match"
             ]
 
             let testOntology = OboOntology.Create([testTerm1; testTerm2; testTerm3; testTerm4; testTerm5], [], "", TreatXrefsAsEquivalents = ["check"])

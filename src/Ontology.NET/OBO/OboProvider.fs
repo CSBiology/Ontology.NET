@@ -173,7 +173,7 @@ module OboProvider =
                 |> List.map quoteOboTerm
                 |> fun a -> Expr.NewArray(typeof<OboTerm>, a)
             let typeDefsExpr =
-                ont.TypeDefs
+                ont.Typedefs
                 |> List.map quoteOboTypeDef
                 |> fun a -> Expr.NewArray(typeof<OboTypedef>, a)
 
@@ -203,7 +203,7 @@ module OboProvider =
 
             <@@ { 
                 Terms                                        = %%termsExpr |> List.ofArray
-                TypeDefs                                     = %%typeDefsExpr |> List.ofArray
+                Typedefs                                     = %%typeDefsExpr |> List.ofArray
                 FormatVersion                                = formatVersion
                 DataVersion                                  = %%dataVersionExpr
                 Ontology                                     = %%ontologyExpr
@@ -341,7 +341,7 @@ type myTerms = OboTermsProvider<oboPath>
                     match suppliedArguments with
                     | [| :? string as path |] ->
                         let ont = OboOntology.fromFile false path
-                        buildTypeDefTypes assembly providerNamespace ont.TypeDefs typeNameWithArgs
+                        buildTypeDefTypes assembly providerNamespace ont.Typedefs typeNameWithArgs
                     | _ ->
                         // This will result in a compile-time error if the arguments are incorrect.
                         failwith "Invalid static arguments. This Type Provider expects a single string argument."
