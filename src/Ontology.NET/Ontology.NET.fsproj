@@ -21,6 +21,7 @@
     <Compile Include="TypeProviderDeps\ProvidedTypes.fs" />
     <Compile Include="GraphoscopeAux.fs" />
     <Compile Include="ImportAux.fs" />
+    <None Include="obo\README.md" />
     <Compile Include="OBO\DBXRef.fs" />
     <Compile Include="OBO\TermSynonym.fs" />
     <Compile Include="OBO\OboTerm.fs" />

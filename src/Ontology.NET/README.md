@@ -14,7 +14,7 @@ t1["A term"] -->|relation| t2["Another term"]
 ```mermaid
 flowchart LR
 
-t1["Source term"] --> t2["Target term"]
+t1["A term<br>(Source term)"] -->|relation| t2["Another term<br>(Target term)"]
 ```
 
 This allows modeling real-world ontologies in a graph structure where terms are connected through typed relations.
