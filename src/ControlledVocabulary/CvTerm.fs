@@ -4,8 +4,7 @@
 open FSharpAux
 
 
-/// Represents a term from a controlled vocabulary (Cv)
-/// in the form of: id|accession ; name|value ; refUri
+/// Represents a term from a controlled vocabulary (CV) in the form of: id|accession ; name|value ; refUri.
 // ?Maybe [<Struct>]
 [<Struct>]
 [<CustomEquality; CustomComparison>]

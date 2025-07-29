@@ -19,6 +19,9 @@
 
   <ItemGroup>
     <Compile Include="CvTerm.fs" />
+    <Compile Include="ParamValue.fs" />
+    <Compile Include="IParamBase.fs" />
+    <Compile Include="ICvBase.fs" />
   </ItemGroup>
 
   <PropertyGroup>
