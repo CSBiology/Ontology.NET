@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ontology.NET\Ontology.NET.fsproj" />
-    
+
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="[17.12.0]" />
     <PackageReference Include="Expecto" Version="[10.2.3]" />
     <PackageReference Include="MSTest.TestAdapter" Version="[2.2.10]" />
@@ -21,9 +21,9 @@
   <ItemGroup>
     <None Include="OBO\References\testOboFile1.obo" />
     <None Include="OBO\References\testOboFile2.obo" />
-    <None Include="obo\references\testOboFile3.obo" />
-    <None Include="obo\references\testOboFile4.obo" />
-    <None Include="obo\references\testOboFile5.obo" />
+    <None Include="OBO\references\testOboFile3.obo" />
+    <None Include="OBO\references\testOboFile4.obo" />
+    <None Include="OBO\references\testOboFile5.obo" />
     <None Include="OBO\references\testOboFile6.obo" />
     <None Include="OBO\References\CorrectHeaderTags.obo" />
     <None Include="OBO\References\DuplicateHeaderTags.obo" />
