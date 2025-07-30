@@ -22,6 +22,12 @@
     <Compile Include="ParamValue.fs" />
     <Compile Include="IParamBase.fs" />
     <Compile Include="ICvBase.fs" />
+    <Compile Include="IParam.fs" />
+    <Compile Include="CvAttributeCollection.fs" />
+    <Compile Include="CvParam.fs" />
+    <Compile Include="UserParam.fs" />
+    <Compile Include="CvObject.fs" />
+    <Compile Include="CvContainer.fs" />
   </ItemGroup>
 
   <PropertyGroup>
