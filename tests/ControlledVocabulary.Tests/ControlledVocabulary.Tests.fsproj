@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ControlledVocabulary\ControlledVocabulary.fsproj" />
+
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.6.5" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="ReferenceObjects.fs" />
+    <Compile Include="CvTerm.Tests.fs" />
+    <Compile Include="CvParam.Tests.fs" />
+    <Compile Include="CvBase.Tests.fs" />
+    <Compile Include="Param.Tests.fs" />
+    <Compile Include="CvContainer.Tests.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ControlledVocabulary\ControlledVocabulary.fsproj" />
+  </ItemGroup>
+
+</Project>
