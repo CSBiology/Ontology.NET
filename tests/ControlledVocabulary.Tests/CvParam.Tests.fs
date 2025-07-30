@@ -1,259 +1,228 @@
-﻿namespace CvParamTests
+﻿module CvParamTests
 
 
-open System.Collections
+open System.Collections.Generic
 
-open Xunit
+open Expecto
 
 open ControlledVocabulary
 open ReferenceObjects
 
 
-module InstanceMemberTests =
+[<Tests>]
+let cvParamTests = testList "CvParamTests" [
 
-    [<Fact>]
-    let ``Accession`` () =
-        let expected = [testAccession1; testAccession1; testAccession2]
-        let actual = testCvParams |> List.map (fun x -> x.Accession)
-        Assert.Equal<string List>(expected, actual)
+    testList "InstanceMemberTests" [
+        testCase "Accession" <| fun _ ->
+            let expected = [testAccession1; testAccession1; testAccession2]
+            let actual = testCvParams |> List.map (fun x -> x.Accession)
+            Expect.equal actual expected "Accessions should match"
 
-    [<Fact>]
-    let ``Name`` () =
-        let expected = [testName1; testName1; testName2]
-        let actual = testCvParams |> List.map (fun x -> x.Name)
-        Assert.Equal<string List>(expected, actual)
+        testCase "Name" <| fun _ ->
+            let expected = [testName1; testName1; testName2]
+            let actual = testCvParams |> List.map (fun x -> x.Name)
+            Expect.equal actual expected "Names should match"
 
-    [<Fact>]
-    let ``RefUri`` () =
-        let expected = [testRef1; testRef1; testRef2]
-        let actual = testCvParams |> List.map (fun x -> x.RefUri)
-        Assert.Equal<string List>(expected, actual)
+        testCase "RefUri" <| fun _ ->
+            let expected = [testRef1; testRef1; testRef2]
+            let actual = testCvParams |> List.map (fun x -> x.RefUri)
+            Expect.equal actual expected "RefUris should match"
 
-    [<Fact>]
-    let ``Value`` () =
-        let expected = [ParamValue.Value 5; ParamValue.CvValue testTerm2; ParamValue.WithCvUnitAccession (5, testTerm1)]
-        let actual = testCvParams |> List.map (fun x -> x.Value)
-        Assert.Equal<ParamValue List>(expected, actual)
-
-
-    module ``Equals`` =
-
-        let testCvp1 = CvParam("test", "test", "test", ParamValue.Value "test", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvParams.Head); d) 
-        let testCvp2 = CvParam("test", "test", "test", ParamValue.Value "test", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvParams.Head); d) 
-        let testAttr1 = CvAttributeCollection(Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvp1); d)
-        let testCvp3 = CvParam("test", "test", "test", ParamValue.Value "test")
-        let testCvp4 = CvParam("test", "test", "test", ParamValue.Value "test")
-        let testCvp5 = CvParam("test", "test", "test", ParamValue.Value "test", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvp1); d)
-        let testCvp6 = CvParam("test", "test", "test", ParamValue.Value "test", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvp2); d)
-        let testCvp7 = CvParam("", "", "", ParamValue.Value "", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvParams[1]); d)
-        let testCvp8 = CvParam("", "", "", ParamValue.Value "", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvp7); d)
-
-        [<Fact>]
-        let ``identical CvParams, empty Attributes with empty Attributes`` () =
-            let actual = testCvp3 = testCvp4
-            Assert.True actual
-
-        [<Fact>]
-        let ``identical CvParams, filled Attributes with empty Attributes`` () =
-            let actual = testCvp1 = testCvp2
-            Assert.True actual
-
-        [<Fact>]
-        let ``identical CvParams, filled Attributes with filled Attributes`` () =
-            let actual = testCvp5 = testCvp6
-            Assert.True actual
-
-        [<Fact>]
-        let ``different CvParams, empty Attributes with empty Attributes`` () =
-            let actual = testCvp3 = testCvParams.Head
-            Assert.False actual
-
-        [<Fact>]
-        let ``different CvParams, filled Attributes with empty Attributes`` () =
-            let actual = testCvp1 = testCvp7
-            Assert.False actual
-
-        [<Fact>]
-        let ``different CvParams, filled Attributes with filled Attributes`` () =
-            let actual = testCvp5 = testCvp8
-            Assert.False actual
+        testCase "Value" <| fun _ ->
+            let expected = [
+                ParamValue.Value 5
+                ParamValue.CvValue testTerm2
+                ParamValue.WithCvUnitAccession (5, testTerm1)
+            ]
+            let actual = testCvParams |> List.map (fun x -> x.Value)
+            Expect.equal actual expected "Values should match"
+    ]
 
 
-module StaticMemberTests =
+    //let testCvp1 = CvParam("test", "test", "test", ParamValue.Value "test", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvParams.Head); d) 
+    //let testCvp2 = CvParam("test", "test", "test", ParamValue.Value "test", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvParams.Head); d) 
+    //let testAttr1 = CvAttributeCollection(Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvp1); d)
+    //let testCvp3 = CvParam("test", "test", "test", ParamValue.Value "test")
+    //let testCvp4 = CvParam("test", "test", "test", ParamValue.Value "test")
+    //let testCvp5 = CvParam("test", "test", "test", ParamValue.Value "test", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvp1); d)
+    //let testCvp6 = CvParam("test", "test", "test", ParamValue.Value "test", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvp2); d)
+    //let testCvp7 = CvParam("", "", "", ParamValue.Value "", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvParams[1]); d)
+    //let testCvp8 = CvParam("", "", "", ParamValue.Value "", Generic.Dictionary<string,IParam>() |> fun d -> d.Add("test", testCvp7); d)
 
-    [<Fact>]
-    let ``getParamValue`` () =
-        let expected = [ParamValue.Value 5; ParamValue.CvValue testTerm2; ParamValue.WithCvUnitAccession (5, testTerm1)]
-        let actual = testCvParams |> List.map CvParam.getParamValue
-        Assert.Equal<ParamValue List>(expected, actual)
+    let mkDict (k, v) =
+        let d = Dictionary<string, IParam>()
+        d.Add(k, v)
+        d
 
-    [<Fact>]
-    let ``getValue`` () =
-        let expected : System.IConvertible list = [5; testTerm2.Name; 5]
-        let actual = testCvParams |> List.map CvParam.getValue
-        Assert.Equal<System.IConvertible List>(expected, actual)
+    let testCvp1 = CvParam("test", "test", "test", ParamValue.Value "test", mkDict("test", testCvParams.Head))
+    let testCvp2 = CvParam("test", "test", "test", ParamValue.Value "test", mkDict("test", testCvParams.Head))
+    let testCvp3 = CvParam("test", "test", "test", ParamValue.Value "test")
+    let testCvp4 = CvParam("test", "test", "test", ParamValue.Value "test")
+    let testCvp5 = CvParam("test", "test", "test", ParamValue.Value "test", mkDict("test", testCvp1))
+    let testCvp6 = CvParam("test", "test", "test", ParamValue.Value "test", mkDict("test", testCvp2))
+    let testCvp7 = CvParam("", "", "", ParamValue.Value "", mkDict("test", testCvParams[1]))
+    let testCvp8 = CvParam("", "", "", ParamValue.Value "", mkDict("test", testCvp7))
 
-    [<Fact>]
-    let ``getValueAsString`` () =
-        let expected = ["5"; testTerm2.Name; "5"]
-        let actual = testCvParams |> List.map CvParam.getValueAsString
-        Assert.Equal<string List>(expected, actual)
+    testList "Equals" [
+        testCase "identical CvParams, empty Attributes" <| fun _ ->
+            Expect.isTrue (testCvp3 = testCvp4) "Should be equal"
 
-    [<Fact>]
-    let ``getValueAsInt`` () =
-        let expected = [5; 5; 5]
-        let actual = testCvParams |> List.map CvParam.getValueAsInt
-        Assert.Equal<int List>(expected, actual)
+        testCase "identical CvParams, filled Attributes with filled Attributes" <| fun _ ->
+            Expect.isTrue (testCvp5 = testCvp6) "Should be equal"
 
-    [<Fact>]
-    let ``getValueAsTerm`` () =
-        let expected = [
-            CvTerm.create(name = "5")
-            testTerm2
-            CvTerm.create(name = "5")
-        ]
-        let actual = testCvParams |> List.map CvParam.getValueAsTerm
-        Assert.Equal<CvTerm List>(expected, actual)  
+        testCase "identical CvParams, filled Attributes with same Attributes" <| fun _ ->
+            Expect.isTrue (testCvp1 = testCvp2) "Should be equal"
 
-    [<Fact>]
-    let ``tryGetValueAccession`` () =
-        let expected = [None; Some testAccession2; None]
-        let actual = testCvParams |> List.map CvParam.tryGetValueAccession
-        Assert.Equal<Option<string> List>(expected, actual)
+        testCase "different CvParams, empty Attributes" <| fun _ ->
+            Expect.isFalse (testCvp3 = testCvParams.Head) "Should not be equal"
 
-    [<Fact>]
-    let ``tryGetValueRef`` () =
-        let expected = [None; Some testRef2; None]
-        let actual = testCvParams |> List.map CvParam.tryGetValueRef
-        Assert.Equal<Option<string> List>(expected, actual)
+        testCase "different CvParams, filled vs empty Attributes" <| fun _ ->
+            Expect.isFalse (testCvp1 = testCvp7) "Should not be equal"
 
-    [<Fact>]
-    let ``tryGetCvUnit`` () =
-        let expected = [None; None; Some testTerm1]
-        let actual = testCvParams |> List.map CvParam.tryGetCvUnit
-        Assert.Equal<Option<CvUnit> List>(expected, actual)
+        testCase "different CvParams, different Attributes" <| fun _ ->
+            Expect.isFalse (testCvp5 = testCvp8) "Should not be equal"
+    ]
 
-    [<Fact>]
-    let ``tryGetCvUnitValue`` () =
-        let expected : (System.IConvertible option) list = [None; None; Some 5]
-        let actual = testCvParams |> List.map CvParam.tryGetCvUnitValue
-        Assert.Equal<Option<System.IConvertible> List>(expected, actual)
+    testList "StaticMemberTests" [
+        testCase "getParamValue" <| fun _ ->
+            let expected = [
+                ParamValue.Value 5
+                ParamValue.CvValue testTerm2
+                ParamValue.WithCvUnitAccession (5, testTerm1)
+            ]
+            let actual = testCvParams |> List.map CvParam.getParamValue
+            Expect.equal actual expected "ParamValues should match"
 
-    [<Fact>]
-    let ``tryGetCvUnitTermName`` () =
-        let expected = [None; None; Some testName1]
-        let actual = testCvParams |> List.map CvParam.tryGetCvUnitTermName
-        Assert.Equal<Option<string> List>(expected, actual)
+        testCase "getValue" <| fun _ ->
+            let expected : System.IConvertible list = [5; testTerm2.Name; 5]
+            let actual = testCvParams |> List.map CvParam.getValue
+            Expect.sequenceEqual actual expected "Values should match"
 
-    [<Fact>]
-    let ``tryGetCvUnitTermAccession`` () =
-        let expected = [None; None; Some testAccession1]
-        let actual = testCvParams |> List.map CvParam.tryGetCvUnitTermAccession
-        Assert.Equal<Option<string> List>(expected, actual)
+        testCase "getValueAsString" <| fun _ ->
+            let expected = ["5"; testTerm2.Name; "5"]
+            let actual = testCvParams |> List.map CvParam.getValueAsString
+            Expect.equal actual expected "String values should match"
 
-    [<Fact>]
-    let ``tryGetCvUnitTermRef`` () =
-        let expected = [None; None; Some testRef2]
-        let actual = testCvParams |> List.map CvParam.tryGetCvUnitTermRef
-        Assert.Equal<Option<string> List>(expected, actual)
+        testCase "getValueAsInt" <| fun _ ->
+            let expected = [5; 5; 5]
+            let actual = testCvParams |> List.map CvParam.getValueAsInt
+            Expect.equal actual expected "Ints should match"
 
-    [<Fact>]
-    let ``mapValue`` () =
-        let expected = [ParamValue.Value 1; ParamValue.Value 1; ParamValue.Value 1]
-        let actual = testCvParams |> List.map (CvParam.mapValue (fun _ -> ParamValue.Value 1) >> CvParam.getParamValue)
-        Assert.Equal<ParamValue List>(expected, actual)
-    
-    [<Fact>]
-    let ``tryMapValue`` () =
-        let expected = [Some (ParamValue.Value 1); Some (ParamValue.Value 1); Some (ParamValue.Value 1)]
-        let actual = testCvParams |> List.map (CvParam.tryMapValue (fun _ -> Some (ParamValue.Value 1)) >> Option.map CvParam.getParamValue)
-        Assert.Equal<(ParamValue option) List>(expected, actual)
-    
-    [<Fact>]
-    let ``tryAddName`` () =
-        let expected = [Some testName1; None; None]
-        let actual = testCvParams |> List.map (CvParam.tryAddName testName1 >> Option.map CvParam.getCvName)
-        Assert.Equal<(string option) List>(expected, actual)
+        testCase "getValueAsTerm" <| fun _ ->
+            let expected = [
+                CvTerm.create(name = "5")
+                testTerm2
+                CvTerm.create(name = "5")
+            ]
+            let actual = testCvParams |> List.map CvParam.getValueAsTerm
+            Expect.equal actual expected "Terms should match"
 
-    [<Fact>]
-    let ``tryAddAccession`` () =
-        let expected = [None; None; None]
-        let actual = testCvParams |> List.map (CvParam.tryAddAccession testAccession1 >> Option.map CvParam.getCvAccession)
-        Assert.Equal<(string option) List>(expected, actual)
-    
-    [<Fact>]
-    let ``tryAddReference`` () =
-        let expected = [None; None; None]
-        let actual = testCvParams |> List.map (CvParam.tryAddReference testRef1 >> Option.map CvParam.getCvRef)
-        Assert.Equal<(string option) List>(expected, actual)
-    
-    [<Fact>]
-    let ``tryAddUnit`` () =
-        let expected = [Some (ParamValue.WithCvUnitAccession (5, testTerm1)); None; None]
-        let actual = testCvParams |> List.map (CvParam.tryAddUnit testTerm1 >> Option.map CvParam.getParamValue)
-        Assert.Equal<(ParamValue option) List>(expected, actual)
-    
-    [<Fact>]
-    let ``getCvAccession`` () =
-        let expected = [testAccession1; testAccession1; testAccession2]
-        let actual = testCvParams |> List.map CvParam.getCvAccession
-        Assert.Equal<string List>(expected, actual)
-    
-    [<Fact>]
-    let ``getCvName`` () =
-        let expected = [testName1; testName1; testName2]
-        let actual = testCvParams |> List.map CvParam.getCvName
-        Assert.Equal<string List>(expected, actual)
-    
-    [<Fact>]
-    let ``getCvRef`` () =
-        let expected = [testRef1; testRef1; testRef2]
-        let actual = testCvParams |> List.map CvParam.getCvRef
-        Assert.Equal<string List>(expected, actual)
-    
-    [<Fact>]
-    let ``getTerm`` () =
-        let expected = [testTerm1; testTerm1; testTerm2]
-        let actual = testCvParams |> List.map CvParam.getTerm
-        Assert.Equal<CvTerm List>(expected, actual)
+        testCase "tryGetValueAccession" <| fun _ ->
+            let expected = [None; Some testAccession2; None]
+            let actual = testCvParams |> List.map CvParam.tryGetValueAccession
+            Expect.equal actual expected "Accessions should match"
 
-    [<Fact>]
-    let ``equalsTerm`` () =
-        Assert.All(
-            (
-                List.zip 
-                    [testTerm1; testTerm1; testTerm2]
-                    testCvParams
-            ),
-            (fun (x,y) -> CvParam.equalsTerm x y |> Assert.True)
-        )
-    
-    [<Fact>]
-    let ``equals`` () =
-        Assert.All(
-            (
-                List.zip 
-                    [
-                        CvParam(testTerm1, ParamValue.Value 5)
-                        CvParam(testTerm1, ParamValue.CvValue testTerm2)
-                        CvParam(testTerm2, ParamValue.WithCvUnitAccession (5, testTerm1))
-                    ]
-                    testCvParams
-            ),
-            (fun (x,y) -> CvParam.equals x y |> Assert.True)
-        )
-    
-    [<Fact>]
-    let ``equalsName`` () =
-        Assert.All(
-            (
-                List.zip 
-                    [
-                        CvParam(testTerm1, ParamValue.Value 5)
-                        CvParam(testTerm1, ParamValue.CvValue testTerm2)
-                        CvParam(testTerm2, ParamValue.WithCvUnitAccession (5, testTerm1))
-                    ]
-                    testCvParams
-            ),
-            (fun (x,y) -> CvParam.equalsName x y |> Assert.True)
-        )
+        testCase "tryGetValueRef" <| fun _ ->
+            let expected = [None; Some testRef2; None]
+            let actual = testCvParams |> List.map CvParam.tryGetValueRef
+            Expect.equal actual expected "Refs should match"
+
+        testCase "tryGetCvUnit" <| fun _ ->
+            let expected = [None; None; Some testTerm1]
+            let actual = testCvParams |> List.map CvParam.tryGetCvUnit
+            Expect.equal actual expected "CvUnits should match"
+
+        testCase "tryGetCvUnitValue" <| fun _ ->
+            let expected : (System.IConvertible option) list = [None; None; Some 5]
+            let actual = testCvParams |> List.map CvParam.tryGetCvUnitValue
+            Expect.equal actual expected "CvUnit values should match"
+
+        testCase "tryGetCvUnitTermName" <| fun _ ->
+            let expected = [None; None; Some testName1]
+            let actual = testCvParams |> List.map CvParam.tryGetCvUnitTermName
+            Expect.equal actual expected "Term names should match"
+
+        testCase "tryGetCvUnitTermAccession" <| fun _ ->
+            let expected = [None; None; Some testAccession1]
+            let actual = testCvParams |> List.map CvParam.tryGetCvUnitTermAccession
+            Expect.equal actual expected "Term accessions should match"
+
+        testCase "tryGetCvUnitTermRef" <| fun _ ->
+            let expected = [None; None; Some testRef2]
+            let actual = testCvParams |> List.map CvParam.tryGetCvUnitTermRef
+            Expect.equal actual expected "Term refs should match"
+
+        testCase "mapValue" <| fun _ ->
+            let expected = [ParamValue.Value 1; ParamValue.Value 1; ParamValue.Value 1]
+            let actual = testCvParams |> List.map (CvParam.mapValue (fun _ -> ParamValue.Value 1) >> CvParam.getParamValue)
+            Expect.equal actual expected "Mapped values should match"
+
+        testCase "tryMapValue" <| fun _ ->
+            let expected = [Some (ParamValue.Value 1); Some (ParamValue.Value 1); Some (ParamValue.Value 1)]
+            let actual = testCvParams |> List.map (CvParam.tryMapValue (fun _ -> Some (ParamValue.Value 1)) >> Option.map CvParam.getParamValue)
+            Expect.equal actual expected "TryMapped values should match"
+
+        testCase "tryAddName" <| fun _ ->
+            let expected = [Some testName1; None; None]
+            let actual = testCvParams |> List.map (CvParam.tryAddName testName1 >> Option.map CvParam.getCvName)
+            Expect.equal actual expected "TryAddName results should match"
+
+        testCase "tryAddAccession" <| fun _ ->
+            let expected = [None; None; None]
+            let actual = testCvParams |> List.map (CvParam.tryAddAccession testAccession1 >> Option.map CvParam.getCvAccession)
+            Expect.equal actual expected "TryAddAccession results should match"
+
+        testCase "tryAddReference" <| fun _ ->
+            let expected = [None; None; None]
+            let actual = testCvParams |> List.map (CvParam.tryAddReference testRef1 >> Option.map CvParam.getCvRef)
+            Expect.equal actual expected "TryAddReference results should match"
+
+        testCase "tryAddUnit" <| fun _ ->
+            let expected = [Some (ParamValue.WithCvUnitAccession (5, testTerm1)); None; None]
+            let actual = testCvParams |> List.map (CvParam.tryAddUnit testTerm1 >> Option.map CvParam.getParamValue)
+            Expect.equal actual expected "TryAddUnit results should match"
+
+        testCase "getCvAccession" <| fun _ ->
+            let expected = [testAccession1; testAccession1; testAccession2]
+            let actual = testCvParams |> List.map CvParam.getCvAccession
+            Expect.equal actual expected "CvAccessions should match"
+
+        testCase "getCvName" <| fun _ ->
+            let expected = [testName1; testName1; testName2]
+            let actual = testCvParams |> List.map CvParam.getCvName
+            Expect.equal actual expected "CvNames should match"
+
+        testCase "getCvRef" <| fun _ ->
+            let expected = [testRef1; testRef1; testRef2]
+            let actual = testCvParams |> List.map CvParam.getCvRef
+            Expect.equal actual expected "CvRefs should match"
+
+        testCase "getTerm" <| fun _ ->
+            let expected = [testTerm1; testTerm1; testTerm2]
+            let actual = testCvParams |> List.map CvParam.getTerm
+            Expect.equal actual expected "Terms should match"
+
+        testCase "equalsTerm" <| fun _ ->
+            List.zip [testTerm1; testTerm1; testTerm2] testCvParams
+            |> List.iter (fun (t, cvp) ->
+                Expect.isTrue (CvParam.equalsTerm t cvp) $"Should match for term {t.Name}"
+            )
+
+        testCase "equals" <| fun _ ->
+            List.zip [
+                CvParam(testTerm1, ParamValue.Value 5)
+                CvParam(testTerm1, ParamValue.CvValue testTerm2)
+                CvParam(testTerm2, ParamValue.WithCvUnitAccession (5, testTerm1))
+            ] testCvParams
+            |> List.iter (fun (a,b) -> Expect.isTrue (CvParam.equals a b) "Should be equal")
+
+        testCase "equalsName" <| fun _ ->
+            List.zip [
+                CvParam(testTerm1, ParamValue.Value 5)
+                CvParam(testTerm1, ParamValue.CvValue testTerm2)
+                CvParam(testTerm2, ParamValue.WithCvUnitAccession (5, testTerm1))
+            ] testCvParams
+            |> List.iter (fun (a,b) -> Expect.isTrue (CvParam.equalsName a b) "Should be equal")
+    ]
+
+]

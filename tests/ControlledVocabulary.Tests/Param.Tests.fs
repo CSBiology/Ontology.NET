@@ -1,158 +1,149 @@
 ﻿module ParamTests
 
 
-//open ARCTokenization
-//open Xunit
+open Expecto
+
+open ControlledVocabulary
 
 
-//[<AutoOpenAttribute>]
-//module Parameter =
+[<AutoOpenAttribute>]
+module Parameter =
+    let testParamValueValue = ParamValue.Value "ParamValue.Value"
+    let testCvParam1 = CvParam("CvParam_TAN_1", "CvParam_Name_1", "CvParam_TSR_1", testParamValueValue)
+    let testCvTerm = CvTerm.create("CvTerm_TAN", "CvTerm_Name", "CvTerm_TSR")
+    let testParamValueCvValue = ParamValue.CvValue testCvTerm
+    let testCvParam2 : CvParam = CvParam("CvParam_TAN_2", "CvParam_Name_2", "CvParam_TSR_3", testParamValueCvValue)
+    let testCvUnit = CvUnit.create("CvUnit_TAN", "CvUnit_Name", "CvUnit_TSR")
+    let testParamValueCvUnit = ParamValue.WithCvUnitAccession ("CvUnit_Value", testCvUnit)
+    let testCvParam3 = CvParam("CvParam_TAN_3", "CvParam_Name_3", "CvParam_TSR_3", testParamValueCvUnit)
 
-//    let testParamValueValue = ParamValue.Value "ParamValue.Value"
-//    let testCvParam1 = CvParam("CvParam_TAN_1", "CvParam_Name_1", "CvParam_TSR_1", testParamValueValue)
-//    let testCvTerm = CvTerm("CvTerm_TAN", "CvTerm_Name", "CvTerm_TSR")
-//    let testParamValueCvValue = ParamValue.CvValue testCvTerm
-//    let testCvParam2 : CvParam = CvParam("CvParam_TAN_2", "CvParam_Name_2", "CvParam_TSR_3", testParamValueCvValue)
-//    let testCvUnit = CvUnit("CvUnit_TAN", "CvUnit_Name", "CvUnit_TSR")
-//    let testParamValueCvUnit = ParamValue.WithCvUnitAccession ("CvUnit_Value", testCvUnit)
-//    let testCvParam3 = CvParam("CvParam_TAN_3", "CvParam_Name_3", "CvParam_TSR_3", testParamValueCvUnit)
 
-//let private getCvAccession = testList "getCvAccession" [
-//    testCase "returns correct TAN" (fun _ ->
-//        let result = CvBase.getCvAccession testCvParam1
-//        Expect.equal "CvParam_TAN_1" result ""
-//    )
-//]
+[<Tests>]
+let paramTests = testList "ParamTests" [
 
-//let private getCvName = testList "getCvName" [
-//    testCase "returns correct Name" (fun _ ->
-//        let result = CvBase.getCvName testCvParam1
-//        Expect.equal "CvParam_Name_1" result ""
-//    )
-//]
+    testList "getCvAccession" [
+        testCase "returns correct TAN" (fun _ ->
+            let result = CvBase.getCvAccession testCvParam1
+            Expect.equal "CvParam_TAN_1" result ""
+        )
+    ]
 
-//let private getCvRef = testList "getCvRef" [
-//    testCase "returns correct TSR" (fun _ ->
-//        let result = CvBase.getCvRef testCvParam1
-//        Expect.equal "CvParam_TSR_1" result ""
-//    )
-//]
+    testList "getCvName" [
+        testCase "returns correct Name" (fun _ ->
+            let result = CvBase.getCvName testCvParam1
+            Expect.equal "CvParam_Name_1" result ""
+        )
+    ]
 
-//let private getValue = testList "getValue" [
-//    testCase "returns correct Value" (fun _ ->
-//        let result = ParamBase.getValue testCvParam1 :?> string
-//        Expect.equal "ParamValue.Value" result ""
-//    )
-//]
+    testList "getCvRef" [
+        testCase "returns correct TSR" (fun _ ->
+            let result = CvBase.getCvRef testCvParam1
+            Expect.equal "CvParam_TSR_1" result ""
+        )
+    ]
 
-//let private tryGetValueAccession = testList "tryGetValueAccession" [
+    testList "getValue" [
+        testCase "returns correct Value" (fun _ ->
+            let result = ParamBase.getValue testCvParam1 :?> string
+            Expect.equal "ParamValue.Value" result ""
+        )
+    ]
 
-//    let retrievedValueTan = ParamBase.tryGetValueAccession testCvParam2
+    testList "tryGetValueAccession" [
 
-//    testCase "isSome" (fun _ ->
-//        Expect.isTrue retrievedValueTan.IsSome ""
-//    )
-//    testCase "returns correct ParamValue TAN" (fun _ ->
-//        Expect.equal "CvTerm_TAN" retrievedValueTan.Value ""
-//    )
-//]
+        let retrievedValueTan = ParamBase.tryGetValueAccession testCvParam2
 
-//let private tryGetValueRef = testList "tryGetValueRef" [
+        testCase "isSome" (fun _ ->
+            Expect.isTrue retrievedValueTan.IsSome ""
+        )
+        testCase "returns correct ParamValue TAN" (fun _ ->
+            Expect.equal "CvTerm_TAN" retrievedValueTan.Value ""
+        )
+    ]
 
-//    let retreivedValueTsr = ParamBase.tryGetValueRef testCvParam2
+    testList "tryGetValueRef" [
 
-//    testCase "isSome" (fun _ ->
-//        Expect.isTrue retreivedValueTsr.IsSome ""
-//    )
-//    testCase "returns correct ParamValue TSR" (fun _ ->
-//        Expect.equal "CvTerm_TSR" retreivedValueTsr.Value ""
-//    )
-//]
+        let retreivedValueTsr = ParamBase.tryGetValueRef testCvParam2
 
-//let private tryGetCvUnit = testList "tryGetCvUnit" [
+        testCase "isSome" (fun _ ->
+            Expect.isTrue retreivedValueTsr.IsSome ""
+        )
+        testCase "returns correct ParamValue TSR" (fun _ ->
+            Expect.equal "CvTerm_TSR" retreivedValueTsr.Value ""
+        )
+    ]
 
-//    let retrievedCvUnit = ParamBase.tryGetCvUnit testCvParam3
+    testList "tryGetCvUnit" [
 
-//    testCase "isSome" (fun _ ->
-//        Expect.isTrue retrievedCvUnit.IsSome ""
-//    )
-//    testCase "returns correct ParamValue CvUnit Name" (fun _ ->
-//        let result = retrievedCvUnit.Value |> fun (_,n,_) -> n
-//        Expect.equal "CvUnit_Name" result ""
-//    )
-//    testCase "returns correct ParamValue CvUnit TAN" (fun _ ->
-//        let result = retrievedCvUnit.Value |> fun (a,_,_) -> a
-//        Expect.equal "CvUnit_TAN" result ""
-//    )
-//    testCase "returns correct ParamValue CvUnit TSR" (fun _ ->
-//        let result = retrievedCvUnit.Value |> fun (_,_,r) -> r
-//        Expect.equal "CvUnit_TSR" result ""
-//    )
-//]
+        let retrievedCvUnit = ParamBase.tryGetCvUnit testCvParam3
 
-//let private tryGetCvUnitValue = testList "tryGetCvUnitValue" [
+        testCase "isSome" (fun _ ->
+            Expect.isTrue retrievedCvUnit.IsSome ""
+        )
+        testCase "returns correct ParamValue CvUnit Name" (fun _ ->
+            let result = retrievedCvUnit.Value.Name
+            Expect.equal "CvUnit_Name" result ""
+        )
+        testCase "returns correct ParamValue CvUnit TAN" (fun _ ->
+            let result = retrievedCvUnit.Value.Accession
+            Expect.equal "CvUnit_TAN" result ""
+        )
+        testCase "returns correct ParamValue CvUnit TSR" (fun _ ->
+            let result = retrievedCvUnit.Value.RefUri
+            Expect.equal "CvUnit_TSR" result ""
+        )
+    ]
 
-//    let retrievedCvUnitValue = ParamBase.tryGetCvUnitValue testCvParam3
+    testList "tryGetCvUnitValue" [
 
-//    testCase "isSome" (fun _ ->
-//        Expect.isTrue retrievedCvUnitValue.IsSome ""
-//    )
-//    testCase "returns correct CvUnit Value" (fun _ ->
-//        let result = retrievedCvUnitValue.Value :?> string
-//        Expect.equal "CvUnit_Value" result ""
-//    )
-//]
+        let retrievedCvUnitValue = ParamBase.tryGetCvUnitValue testCvParam3
 
-//let private tryGetCvUnitName = testList "tryGetCvUnitName" [
+        testCase "isSome" (fun _ ->
+            Expect.isTrue retrievedCvUnitValue.IsSome ""
+        )
+        testCase "returns correct CvUnit Value" (fun _ ->
+            let result = retrievedCvUnitValue.Value :?> string
+            Expect.equal "CvUnit_Value" result ""
+        )
+    ]
 
-//    let retrievedCvUnitName = ParamBase.tryGetCvUnitName testCvParam3
+    testList "tryGetCvUnitName" [
 
-//    testCase "isSome" (fun _ ->
-//        Expect.isTrue retrievedCvUnitName.IsSome ""
-//    )
-//    testCase "returns correct CvUnit Name" (fun _ ->
-//        let result = retrievedCvUnitName.Value
-//        Expect.equal "CvUnit_Name" result ""
-//    )
-//]
+        let retrievedCvUnitName = ParamBase.tryGetCvUnitTermName testCvParam3
 
-//let private tryGetCvUnitAccession = testList "tryGetCvUnitAccession" [
+        testCase "isSome" (fun _ ->
+            Expect.isTrue retrievedCvUnitName.IsSome ""
+        )
+        testCase "returns correct CvUnit Name" (fun _ ->
+            let result = retrievedCvUnitName.Value
+            Expect.equal "CvUnit_Name" result ""
+        )
+    ]
 
-//    let retrievedCvUnitTan = ParamBase.tryGetCvUnitAccession testCvParam3
+    testList "tryGetCvUnitAccession" [
 
-//    testCase "isSome" (fun _ ->
-//        Expect.isTrue retrievedCvUnitTan.IsSome ""
-//    )
-//    testCase "returns correct CvUnit TAN" (fun _ ->
-//        let result = retrievedCvUnitTan.Value
-//        Expect.equal "CvUnit_TAN" result ""
-//    )
-//]
+        let retrievedCvUnitTan = ParamBase.tryGetCvUnitTermAccession testCvParam3
 
-//let private tryGetCvUnitRef = testList "tryGetCvUnitRef" [
+        testCase "isSome" (fun _ ->
+            Expect.isTrue retrievedCvUnitTan.IsSome ""
+        )
+        testCase "returns correct CvUnit TAN" (fun _ ->
+            let result = retrievedCvUnitTan.Value
+            Expect.equal "CvUnit_TAN" result ""
+        )
+    ]
 
-//    let retrievedCvUnitTsr = ParamBase.tryGetCvUnitRef testCvParam3
+    testList "tryGetCvUnitRef" [
 
-//    testCase "isSome" (fun _ ->
-//        Expect.isTrue retrievedCvUnitTsr.IsSome ""
-//    )
-//    testCase "returns correct CvUnit TSR" (fun _ ->
-//        let result = retrievedCvUnitTsr.Value
-//        Expect.equal "CvUnit_TSR" result ""
-//    )
-//]
+        let retrievedCvUnitTsr = ParamBase.tryGetCvUnitTermRef testCvParam3
 
-//let main =
-//    testList "ParamTests" [
-//        getCvAccession
-//        getCvName
-//        getCvRef
-//        getValue
-//        tryGetValueAccession
-//        tryGetValueRef
-//        tryGetCvUnit
-//        tryGetCvUnitValue
-//        tryGetCvUnitName
-//        tryGetCvUnitAccession
-//        tryGetCvUnitRef
-//    ]
+        testCase "isSome" (fun _ ->
+            Expect.isTrue retrievedCvUnitTsr.IsSome ""
+        )
+        testCase "returns correct CvUnit TSR" (fun _ ->
+            let result = retrievedCvUnitTsr.Value
+            Expect.equal "CvUnit_TSR" result ""
+        )
+    ]
+
+]
