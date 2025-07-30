@@ -50,7 +50,13 @@ type CvTerm = {
         name: string,
         ref : string
     ) = 
-        {Accession = accession; Name = name; RefUri = ref}
+
+        let tanAccession =
+            if CvTerm.checkForUri accession then 
+                CvTerm.uriToTan accession
+            else accession
+
+        {Accession = tanAccession; Name = name; RefUri = ref}
 
     /// <summary>
     /// Creates a CvTerm from a given name. Accession and reference are empty.
@@ -86,8 +92,7 @@ type CvTerm = {
             | :? CvTerm as cvt -> compare this.Accession cvt.Accession
             | _ -> raise (System.ArgumentException("Object must be of type CvTerm"))
 
-/// Represents a unit term from the unit ontology 
-/// in the form of: id|accession * name * refUri
+/// Represents a unit term from the unit ontology in the form of: id|accession * name * refUri.
 // ?Maybe [<Struct>]
 type CvUnit = 
     CvTerm
