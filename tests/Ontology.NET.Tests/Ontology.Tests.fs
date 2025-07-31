@@ -55,9 +55,9 @@ module OntologyTests =
                     Expect.equal actual expected "CvTerms differ"
             ]
 
-            testList "GetRelation" [
-                testCase "gets relation correctly" <| fun _ ->
-                    let actual = ReferenceObjects.testOnto1.GetRelation("test:01", "test:02")
+            testList "GetRelations" [
+                testCase "gets relations correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.GetRelations("test:01", "test:02")
                     let expected = set [Xref]
                     Expect.equal actual expected "Relations are not equal"
             ]
@@ -242,7 +242,7 @@ module OntologyTests =
                         o
                     let res = testOnto1.MergeWith(testOnto2)
                     let actual1 = res.GetTerms() |> Seq.toList
-                    let actual2 = res.GetRelations() |> Seq.toList
+                    let actual2 = res.GetAllRelations() |> Seq.toList
                     let expected1 = [
                         "TO1:1", CvTerm.create("TO1:1", "test1", "TO1"); "TO1:2", CvTerm.create("TO1:2", "test2", "TO1"); "TO3:1", CvTerm.create("TO3:1", "<missing>", "<missing>"); "TO2:1", CvTerm.create("TO2:1", "test1", "TO2"); "TO2:2", CvTerm.create("TO2:2", "test2", "TO2")
                     ]
@@ -263,6 +263,34 @@ module OntologyTests =
                 testCase "gives correct check: false" <| fun _ ->
                     let actual = testOnto.ContainsTerm("TO:1")
                     Expect.isFalse actual "Returns true but should be false"
+            ]
+
+            testList "GetAllRelations" [
+                testCase "returns all relations correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.GetAllRelations()
+                    let expected = [
+                        "test:01", "test:02", Set.singleton Xref
+                        "test:01", "test:04", Set.singleton IsA
+                        "test:02", "test:04", Set.singleton IsA
+                        "test:03", "test:02", Set.singleton Xref
+                        "test:03", "test:04", Set.singleton IsA
+                    ]
+                    Expect.sequenceEqual actual expected "Relations differ"
+            ]
+
+            testList "TryGetRelations" [
+                testCase "gets Some relations" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.TryGetRelations("test:01", "test:02")
+                    Expect.isSome actual "Relations are not there though they should"
+
+                testCase "gets relations correctly" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.TryGetRelations("test:01", "test:02")
+                    let expected = Some <| set [Xref]
+                    Expect.equal actual expected "Relations are not equal"
+
+                testCase "gets None when relations are not existing" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.TryGetRelations("test:02", "test:01")
+                    Expect.isNone actual "Relations are there though they shouldn't"
             ]
 
         ]
