@@ -21,10 +21,10 @@
   <ItemGroup>
     <None Include="OBO\References\testOboFile1.obo" />
     <None Include="OBO\References\testOboFile2.obo" />
-    <None Include="OBO\references\testOboFile3.obo" />
-    <None Include="OBO\references\testOboFile4.obo" />
-    <None Include="OBO\references\testOboFile5.obo" />
-    <None Include="OBO\references\testOboFile6.obo" />
+    <None Include="OBO\References\testOboFile3.obo" />
+    <None Include="OBO\References\testOboFile4.obo" />
+    <None Include="OBO\References\testOboFile5.obo" />
+    <None Include="OBO\References\testOboFile6.obo" />
     <None Include="OBO\References\CorrectHeaderTags.obo" />
     <None Include="OBO\References\DuplicateHeaderTags.obo" />
     <None Include="OBO\References\IncorrectHeaderTags.obo" />
