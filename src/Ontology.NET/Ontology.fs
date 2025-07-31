@@ -128,6 +128,13 @@ type Ontology() =
         FGraph.addNode term.Accession term this :?> Ontology
 
     /// <summary>
+    /// Checks if a term exists under the given ID.
+    /// </summary>
+    /// <param name="termId">The ID of the term whose presence in the Ontology shall be checked.</param>
+    member this.ContainsTerm(termId) =
+        FGraph.containsNode termId this
+
+    /// <summary>
     /// Returns the CvTerm under the given term ID.
     /// </summary>
     /// <param name="termId">The ID of the CvTerm that shall be returned.</param>
@@ -834,6 +841,14 @@ type Ontology() =
     /// <param name="onto">The Ontology to which the term shall be added.</param>
     static member addTerm term (onto : Ontology) =
         onto.AddTerm(term)
+
+    /// <summary>
+    /// Checks if a term exists under the given ID.
+    /// </summary>
+    /// <param name="termId">The ID of the term whose presence in the Ontology shall be checked.</param>
+    /// <param name="onto">The Ontology where the presence of the term shall be checked.</param>
+    static member containsTerm termId (onto : Ontology) =
+        onto.ContainsTerm(termId)
 
     /// <summary>
     /// Returns the CvTerm under the given term ID.

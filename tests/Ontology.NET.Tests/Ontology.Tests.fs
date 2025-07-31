@@ -253,4 +253,16 @@ module OntologyTests =
                     Expect.sequenceEqual actual2 expected2 "Relations differ"
             ]
 
+            testList "ContainsTerm" [
+                let testOnto = Ontology().AddTerm(CvTerm.create("TO:0", "test", "TO"))
+
+                testCase "gives correct check: true" <| fun _ ->
+                    let actual = testOnto.ContainsTerm("TO:0")
+                    Expect.isTrue actual "Returns false but should be true"
+
+                testCase "gives correct check: false" <| fun _ ->
+                    let actual = testOnto.ContainsTerm("TO:1")
+                    Expect.isFalse actual "Returns true but should be false"
+            ]
+
         ]
