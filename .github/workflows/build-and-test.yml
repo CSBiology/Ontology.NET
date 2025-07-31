@@ -41,6 +41,13 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.x.x
+
+    - name: Clear NuGet cache   # to prevent error NU1403: Package content hash validation failed for FSharp.Core.8.0.403. The package is different than the last restore.
+      run: dotnet nuget locals all --clear
+
+    - name: Restore dependencies
+      run: dotnet restore --force-evaluate
+
     - name: Build and test
       working-directory: ./
       run: ./build.cmd runtests
