@@ -19,14 +19,11 @@ jobs:
       with:
         dotnet-version: 8.x.x
 
-    - name: Print NuGet sources, before clear
-      run: dotnet nuget list source
-
     - name: Clear NuGet cache   # to prevent error NU1403: Package content hash validation failed for FSharp.Core.8.0.403. The package is different than the last restore.
       run: dotnet nuget locals all --clear
 
-    - name: Print NuGet sources, after clear
-      run: dotnet nuget list source
+    - name: Restore dependencies
+      run: dotnet restore --force-evaluate
 
     - name: make script executable
       run: chmod u+x build.sh
