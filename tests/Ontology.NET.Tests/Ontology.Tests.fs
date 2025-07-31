@@ -293,4 +293,14 @@ module OntologyTests =
                     Expect.isNone actual "Relations are there though they shouldn't"
             ]
 
+            testList "HasRelations" [
+                testCase "gives correct check: true" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.HasRelations("test:01", "test:02")
+                    Expect.isTrue actual "Returns false but should be true"
+
+                testCase "gives correct check: false" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.HasRelations("test:02", "test:01")
+                    Expect.isFalse actual "Returns true but should be false"
+            ]
+
         ]

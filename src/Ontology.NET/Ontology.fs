@@ -121,18 +121,18 @@ type Ontology() =
     // basic functionality:
 
     /// <summary>
-    /// Adds a CvTerm to the Ontology.
-    /// </summary>
-    /// <param name="term">The CvTerm that gets added to the Ontology.</param>
-    member this.AddTerm(term : CvTerm) =
-        FGraph.addNode term.Accession term this :?> Ontology
-
-    /// <summary>
     /// Checks if a term exists under the given ID.
     /// </summary>
     /// <param name="termId">The ID of the term whose presence in the Ontology shall be checked.</param>
     member this.ContainsTerm(termId) =
         FGraph.containsNode termId this
+
+    /// <summary>
+    /// Adds a CvTerm to the Ontology.
+    /// </summary>
+    /// <param name="term">The CvTerm that gets added to the Ontology.</param>
+    member this.AddTerm(term : CvTerm) =
+        FGraph.addNode term.Accession term this :?> Ontology
 
     /// <summary>
     /// Returns the CvTerm under the given term ID.
@@ -176,6 +176,15 @@ type Ontology() =
     /// <param name="termId">The ID of the term that gets removed.</param>
     member this.RemoveTerm(termId) =
         FGraph.removeNode termId this :?> Ontology
+
+    /// <summary>
+    /// Checks if at least 1 relation from source term to target term exists. 
+    /// </summary>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
+    /// <remarks>Does not check if a relation exists from target to source term.</remarks>
+    member this.HasRelations(sourceTermId, targetTermId) =
+        FGraph.containsEdge sourceTermId targetTermId this
 
     /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
@@ -848,20 +857,20 @@ type Ontology() =
     // accompanying static methods (to existing instance methods):
 
     /// <summary>
-    /// Adds a CvTerm to the Ontology.
-    /// </summary>
-    /// <param name="term">The CvTerm that gets added to the Ontology.</param>
-    /// <param name="onto">The Ontology to which the term shall be added.</param>
-    static member addTerm term (onto : Ontology) =
-        onto.AddTerm(term)
-
-    /// <summary>
     /// Checks if a term exists under the given ID.
     /// </summary>
     /// <param name="termId">The ID of the term whose presence in the Ontology shall be checked.</param>
     /// <param name="onto">The Ontology where the presence of the term shall be checked.</param>
     static member containsTerm termId (onto : Ontology) =
         onto.ContainsTerm(termId)
+
+    /// <summary>
+    /// Adds a CvTerm to the Ontology.
+    /// </summary>
+    /// <param name="term">The CvTerm that gets added to the Ontology.</param>
+    /// <param name="onto">The Ontology to which the term shall be added.</param>
+    static member addTerm term (onto : Ontology) =
+        onto.AddTerm(term)
 
     /// <summary>
     /// Returns the CvTerm under the given term ID.
@@ -902,6 +911,16 @@ type Ontology() =
     /// <param name="onto">The Ontology from which the term shall be removed.</param>
     static member removeTerm term (onto : Ontology) =
         onto.RemoveTerm(term)
+
+    /// <summary>
+    /// Checks if at least 1 relation from source term to target term exists.
+    /// </summary>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
+    /// <param name="onto">The Ontology in which the relation shall be searched for.</param>
+    /// <remarks>Does not check if a relation exists from target to source term.</remarks>
+    static member hasRelations sourceTermId targetTermId (onto : Ontology) =
+        onto.HasRelations(sourceTermId, targetTermId)
 
     /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
