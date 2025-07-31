@@ -18,11 +18,17 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.x.x
+
+    # to prevent error NU1403: Package content hash validation failed for FSharp.Core.8.0.403. The package is different than the last restore.
+    - name: Restore dependencies
+      run: dotnet restore --force-evaluate
+
     - name: make script executable
       run: chmod u+x build.sh
+
     - name: Build and test
-      working-directory: ./
       run: ./build.sh runtests
+
 
   build-and-test-windows:
     
@@ -34,6 +40,11 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.x.x
+
+    # to prevent error NU1403: Package content hash validation failed for FSharp.Core.8.0.403. The package is different than the last restore.
+    - name: Restore dependencies
+      run: dotnet restore --force-evaluate
+
     - name: Build and test
       working-directory: ./
       run: ./build.cmd runtests

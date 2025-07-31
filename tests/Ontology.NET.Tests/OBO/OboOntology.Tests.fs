@@ -59,9 +59,9 @@ module OboOntologyTests =
             let testFile1 = try OboOntology.fromFile false testFile1Path |> Some with _ -> None
             let testFile2 = try OboOntology.fromFile false testFile2Path |> Some with _ -> None
             let testFile3 = try OboOntology.fromFile false testFile3Path |> Some with _ -> None
-            let testOboFile3Path = Path.Combine(__SOURCE_DIRECTORY__, "references", "testOboFile3.obo")
+            let testOboFile3Path = Path.Combine(__SOURCE_DIRECTORY__, "References", "testOboFile3.obo")
             let testOboFile3 = try OboOntology.fromFile false testOboFile3Path |> Some with _ -> None
-            let goPath = Path.Combine(__SOURCE_DIRECTORY__, "references", "go.obo")
+            let goPath = Path.Combine(__SOURCE_DIRECTORY__, "References", "go.obo")
             let go = try OboOntology.fromFile false goPath |> Some with _ -> None
 
 

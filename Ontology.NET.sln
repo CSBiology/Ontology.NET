@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{CE3D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{F9AB2DC2-AB20-4AC2-A827-82819C82D4FA}"
 	ProjectSection(SolutionItems) = preProject
-		build-and-test.yml = build-and-test.yml
+		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ControlledVocabulary", "src\ControlledVocabulary\ControlledVocabulary.fsproj", "{27679102-2E6D-4BD9-9DF4-FC101EA6487D}"
