@@ -187,6 +187,20 @@ type Ontology() =
         FGraph.containsEdge sourceTermId targetTermId this
 
     /// <summary>
+    /// Checks if the given relation from source term to target term exists.
+    /// </summary>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
+    /// <param name="relation">The relation whose presence shall be checked.</param>
+    /// <remarks>Does not check if the relation exists from target to source term.</remarks>
+    member this.HasRelation(sourceTermId, targetTermId, relation) =
+        match this.TryGetRelations(sourceTermId, targetTermId) with
+        | None -> 
+            false
+        | Some r ->
+            Set.contains relation r
+
+    /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
     /// </summary>
     /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
@@ -921,6 +935,17 @@ type Ontology() =
     /// <remarks>Does not check if a relation exists from target to source term.</remarks>
     static member hasRelations sourceTermId targetTermId (onto : Ontology) =
         onto.HasRelations(sourceTermId, targetTermId)
+
+    /// <summary>
+    /// Checks if the given relation from source term to target term exists.
+    /// </summary>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
+    /// <param name="relation">The relation whose presence shall be checked.</param>
+    /// <param name="onto">The Ontology in which the relation shall be searched for.</param>
+    /// <remarks>Does not check if the relation exists from target to source term.</remarks>
+    static member hasRelation sourceTermId targetTermId relation (onto : Ontology) =
+        onto.HasRelation(sourceTermId, targetTermId, relation)
 
     /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
