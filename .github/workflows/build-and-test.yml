@@ -18,11 +18,15 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.x.x
+
+    - name: Clear NuGet cache
+      run: dotnet nuget locals all --clear
+
     - name: make script executable
       run: chmod u+x build.sh
     - name: Build and test
-      working-directory: ./
       run: ./build.sh runtests
+
 
   build-and-test-windows:
     
