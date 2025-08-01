@@ -313,4 +313,23 @@ module OntologyTests =
                     Expect.isFalse actual "Returns true but should be false"
             ]
 
+            testList "fromTriplets" [
+                testCase "returns correct Ontology" <| fun _ ->
+                    let trips = [
+                        CvTerm.create("TR:1", "tripletTerm1", "TR"), IsA, CvTerm.create("TR:2", "tripletTerm2", "TR")
+                        CvTerm.create("TR:1", "tripletTerm1", "TR"), Xref, CvTerm.create("TR:3", "tripletTerm3", "TR")
+                        CvTerm.create("TR:2", "tripletTerm2", "TR"), Custom "has_a", CvTerm.create("TR:3", "tripletTerm3", "TR")
+                        CvTerm.create("TR:1", "tripletTerm1", "TR"), Term (CvTerm.create("RO:9999999", "uses", "RO")), CvTerm.create("TR:4", "tripletTerm4", "TR")
+                        CvTerm.create("TR:1", "tripletTerm1", "TR"), Custom "optional use", CvTerm.create("TR:4", "tripletTerm4", "TR")
+                    ]
+                    let actual = Ontology.fromTriplets trips |> FGraph.toSeq
+                    let expected = [
+                        "TR:1", CvTerm.create("TR:1", "tripletTerm1", "TR"), "TR:2", CvTerm.create("TR:2", "tripletTerm2", "TR"), Set.singleton IsA
+                        "TR:1", CvTerm.create("TR:1", "tripletTerm1", "TR"), "TR:3", CvTerm.create("TR:3", "tripletTerm3", "TR"), Set.singleton Xref
+                        "TR:1", CvTerm.create("TR:1", "tripletTerm1", "TR"), "TR:4", CvTerm.create("TR:4", "tripletTerm4", "TR"), Set [Term (CvTerm.create("RO:9999999", "uses", "RO")); Custom "optional use"]
+                        "TR:2", CvTerm.create("TR:2", "tripletTerm2", "TR"), "TR:3", CvTerm.create("TR:3", "tripletTerm3", "TR"), Set.singleton <| Custom "has_a"
+                    ]
+                    Expect.sequenceEqual actual expected "Ontologies differ but they shouldn't"
+            ]
+
         ]

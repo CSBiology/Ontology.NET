@@ -15,23 +15,36 @@ module internal OntologyGraphHelpers =
     let setOrAddEdgeObo sourceTerm searchedTermKey (relationType : RelationType) oboOnto graph =
         let cvtTarget = OboOntology.getOrCreateTerm searchedTermKey oboOnto |> OboTerm.toCvTerm
         if FGraph.containsNode cvtTarget.Accession graph then
-            match FGraph.tryFindEdge sourceTerm.Accession cvtTarget.Accession graph with
-            | Some (nk1,nk2,alreadyExistingEdge) -> 
+            if FGraph.containsEdge sourceTerm.Accession cvtTarget.Accession graph then
+                let _, _, alreadyExistingEdge = FGraph.findEdge sourceTerm.Accession cvtTarget.Accession graph
                 FGraph.setEdgeData sourceTerm.Accession cvtTarget.Accession (Set.add relationType alreadyExistingEdge) graph
-            | None -> 
+            else
                 FGraph.addEdge sourceTerm.Accession cvtTarget.Accession (Set (List.singleton relationType)) graph
             |> ignore
+            // TO DO: Replace this with the code below as soon as the `FGraph.tryFindEdge` bug is fixed and a new version with the fix is released.
+            //match FGraph.tryFindEdge sourceTerm.Accession cvtTarget.Accession graph with
+            //| Some (nk1,nk2,alreadyExistingEdge) -> 
+            //    FGraph.setEdgeData sourceTerm.Accession cvtTarget.Accession (Set.add relationType alreadyExistingEdge) graph
+            //| None -> 
+            //    FGraph.addEdge sourceTerm.Accession cvtTarget.Accession (Set (List.singleton relationType)) graph
+            //|> ignore
         else 
             let missingTargetTerm = CvTerm.create(searchedTermKey, "<missing>", "<missing>")
             FGraph.addElement sourceTerm.Accession sourceTerm missingTargetTerm.Accession missingTargetTerm (Set (List.singleton relationType)) graph |> ignore
 
     // CAUTION: fails if one of the terms doesn't exist in the given Ontology!
-    let setOrAddEdge sourceTerm targetTerm (relation : RelationType) onto =
-        match FGraph.tryFindEdge sourceTerm targetTerm onto with
-        | Some (_, _, edgeData) ->
-            FGraph.setEdgeData sourceTerm targetTerm (Set.add relation edgeData) onto
-        | None -> 
-            FGraph.addEdge sourceTerm targetTerm (Set.singleton relation) onto
+    let setOrAddEdge sourceTermId targetTermId (relation : RelationType) onto =
+        if FGraph.containsEdge sourceTermId targetTermId onto then
+            let _, _, currRel = FGraph.findEdge sourceTermId targetTermId onto
+            FGraph.setEdgeData sourceTermId targetTermId (Set.add relation currRel) onto
+        else
+            FGraph.addEdge sourceTermId targetTermId (Set.singleton relation) onto
+        // TO DO: Replace this with the code below as soon as the `FGraph.tryFindEdge` bug is fixed and a new version with the fix is released.
+        //match FGraph.tryFindEdge sourceTerm targetTerm onto with
+        //| Some (_, _, edgeData) ->
+        //    FGraph.setEdgeData sourceTerm targetTerm (Set.add relation edgeData) onto
+        //| None -> 
+        //    FGraph.addEdge sourceTerm targetTerm (Set.singleton relation) onto
 
 
 open OntologyGraphHelpers
@@ -46,7 +59,7 @@ type Ontology() =
     // parsing functionality:
 
     /// <summary>
-    /// Takes a given OboOntology and transforms it into an Ontology, with the term IDs as node keys, the terms as CvTerms as node data and the relations as edges.
+    /// Takes a given OboOntology and returns the corresponding Ontology, with the term IDs as node keys, the terms as CvTerms as node data and the relations as edges.
     /// </summary>
     /// <remarks>If a relation points to a term that is not present in the given OboOntology, initializes them as new CvTerms but with name and ref = "&lt;missing&gt;".</remarks>
     static member fromOboOntology (oboOnto : OboOntology) =
@@ -116,6 +129,23 @@ type Ontology() =
         oboOnto.WithImportsFromHeadersTransitively(?verbose = verbose, ?basePath = basePath)
         |> Seq.map Ontology.fromOboOntology
         |> Ontology.mergeAll
+
+    /// <summary>
+    /// Takes a sequence of triplets and returns the corresponding Ontology.
+    /// </summary>
+    /// <param name="triplets">The triplets in the form of source term * relation * target term that serve as the informational basis for the ontology that gets created out of them.</param>
+    static member fromTriplets (triplets : (CvTerm * RelationType * CvTerm) seq) = 
+        let onto = Ontology()
+
+        triplets
+        |> Seq.iter (
+            fun (term1,rel,term2) ->
+                onto.AddTerm(term1) |> ignore
+                onto.AddTerm(term2) |> ignore
+                onto.AddRelation(term1.Accession, term2.Accession, rel) |> ignore
+        )
+
+        onto
 
 
     // basic functionality:
