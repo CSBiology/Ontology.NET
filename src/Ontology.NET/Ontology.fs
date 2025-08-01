@@ -147,6 +147,23 @@ type Ontology() =
 
         onto
 
+    static member toOboOntology headerData (onto : Ontology) =
+
+        let terms = 
+            onto.GetTerms() 
+            |> Seq.map snd
+            |> Seq.map (
+                fun cvt -> 
+                    let relations = onto.GetTargetTermRelations(cvt.Accession)
+                    OboTerm.Create(
+                        cvt.Accession, 
+                        Name = cvt.Name
+                        Relationships = 
+                    )
+            )
+
+        OboOntology.Create
+
 
     // basic functionality:
 
