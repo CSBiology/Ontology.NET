@@ -56,4 +56,14 @@ module OboTermTests =
                     Expect.equal actual.Name expected.Name "Names are different"
                     Expect.equal actual.Accession expected.Accession "TANs are different"
             ]
+
+            testList "constructRelationship" [
+                testCase "returns correct relationship string" <| fun _ ->
+                    let actual = OboTerm.constructRelationship "part_of" "TGMA:0000002"
+                    let expected = "part_of TGMA:0000002"
+                    Expect.equal actual expected "relationship strings differ"
+
+                testCase "throws when expected" <| fun _ ->
+                    Expect.throws (fun _ -> OboTerm.constructRelationship "part of" "TGMA:0000002" |> ignore) "Did not throw though expected"
+            ]
         ]

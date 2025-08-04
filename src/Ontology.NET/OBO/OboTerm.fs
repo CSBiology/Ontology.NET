@@ -531,7 +531,7 @@ type OboTerm =
         let whiteSpacePattern = Regex(@"\s")
         if whiteSpacePattern.Match(relationshipName).Success then
             raise (System.ArgumentException($"relationshipName {relationshipName} must not contain white spaces.", relationshipName))
-        $"{relationshipName} {targetTermId}"
+        $"{targetTermId} {relationshipName}"
 
     /// Returns the OboTerm's relationships as a triple consisting of the term's ID, the name of the relationship, and the related term's ID.
     member this.GetRelatedTermIds() =
