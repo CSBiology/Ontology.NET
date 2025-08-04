@@ -64,6 +64,6 @@ module OboTermTests =
                     Expect.equal actual expected "relationship strings differ"
 
                 testCase "throws when expected" <| fun _ ->
-                    Expect.throws (fun _ -> OboTerm.constructRelationship "part of" "TGMA:0000002" |> ignore) "Did not throw though expected"
+                    Expect.throws (fun _ -> OboTerm.constructRelationship "TGMA:0000002" "part of" |> ignore) "Did not throw though expected"
             ]
         ]
