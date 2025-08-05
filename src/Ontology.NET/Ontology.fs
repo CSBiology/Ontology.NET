@@ -8,6 +8,7 @@ open Graphoscope
 
 open GraphoscopeAux
 open Ontology.NET.OBO
+open type RelationType
 
 
 module internal OntologyGraphHelpers =
@@ -131,6 +132,57 @@ type Ontology() =
         |> Ontology.mergeAll
 
     /// <summary>
+    /// Creates an OboOntology from the Ontology. Incorporates the given header tags if present.
+    /// </summary>
+    /// <param name="headerTags">Optional. The header tags of the resulting OboOntology. Default is empty.</param>
+    member this.ToOboOntology(?headerTags) =
+
+        let ht = Option.defaultValue (OboOntologyHeaderTags.createDefault ()) headerTags
+
+        let rec innerLoop (tt : string) (rts : RelationType list) rs ias xs =
+            match rts with
+            | h :: t ->
+                match h with
+                | IsA ->        innerLoop tt t rs (tt :: ias) xs
+                | Xref ->       innerLoop tt t rs ias (tt :: xs)
+                | Term cvt ->   innerLoop tt t ((tt,cvt.Name) :: rs) ias xs
+                | Custom c ->   innerLoop tt t ((tt, c) :: rs) ias xs
+            | [] -> rs, ias, xs
+
+        let rec outerLoop (input : (string * RelationType Set) list) rs ias xs =
+            match input with
+            | (tt,rts) :: t -> innerLoop tt (Seq.toList rts) rs ias xs
+            | [] -> rs, ias, xs
+
+        let terms = 
+            this.GetTerms() 
+            |> Seq.map snd
+            |> Seq.map (
+                fun cvt -> 
+                    let relations = this.GetTargetTermRelations(cvt.Accession)
+                    let relationshipsRaw, isAs, xrefsRaw = outerLoop (List.ofSeq relations) [] [] []
+                    let relationshipsProcessed = relationshipsRaw |> List.map (fun (tt,rsn) -> OboTerm.constructRelationship tt rsn)
+                    let xrefsProcessed = xrefsRaw |> List.map DBXref.ofString
+                    OboTerm.Create(
+                        cvt.Accession, 
+                        Name = cvt.Name,
+                        Relationships = relationshipsProcessed,
+                        IsA = isAs,
+                        Xrefs = xrefsProcessed
+                    )
+            )
+
+        OboOntology.Create(Seq.toList terms, [], ht)
+
+    /// <summary>
+    /// Creates an OboOntology from the given Ontology. Incorporates the given header tags if present.
+    /// </summary>
+    /// <param name="headerTags">Optional. The header tags of the resulting OboOntology. Default is empty.</param>
+    /// <param name="onto">The Ontology that shall be used as the basis of the resulting OboOntology.</param>
+    static member toOboOntology headerTags (onto : Ontology) =
+        onto.ToOboOntology(headerTags)
+
+    /// <summary>
     /// Takes a sequence of triplets and returns the corresponding Ontology.
     /// </summary>
     /// <param name="triplets">The triplets in the form of source term * relation * target term that serve as the informational basis for the ontology that gets created out of them.</param>
@@ -146,23 +198,6 @@ type Ontology() =
         )
 
         onto
-
-    //static member toOboOntology headerData (onto : Ontology) =
-
-        //let terms = 
-        //    onto.GetTerms() 
-        //    |> Seq.map snd
-        //    |> Seq.map (
-        //        fun cvt -> 
-        //            let relations = onto.GetTargetTermRelations(cvt.Accession)
-        //            OboTerm.Create(
-        //                cvt.Accession, 
-        //                Name = cvt.Name
-        //                Relationships = 
-        //            )
-        //    )
-
-        //OboOntology.Create
 
 
     // basic functionality:

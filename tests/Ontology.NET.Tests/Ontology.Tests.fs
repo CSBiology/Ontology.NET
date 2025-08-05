@@ -332,4 +332,10 @@ module OntologyTests =
                     Expect.sequenceEqual actual expected "Ontologies differ but they shouldn't"
             ]
 
+            testList "toOboOntology" [
+                testCase "returns correct OboOntology" <| fun _ ->
+                    let oboOntoHeaderTags = OBO.OboOntologyHeaderTags.create
+                    let actual = ReferenceObjects.testOnto1.ToOntology()
+            ]
+
         ]
