@@ -91,6 +91,15 @@ type OboOntology =
         RelaxUniqueLabelAssumptionForNamespaces         = defaultArg RelaxUniqueLabelAssumptionForNamespaces []
     }
 
+    /// <summary>
+    /// Creates an OboOntology out of the given header tags alongside the given terms and typedefs.
+    /// </summary>
+    /// <param name="terms">The list of OboTerms the resulting OboOntology shall have.</param>
+    /// <param name="typedefs">The list of OboTypedefs the resulting OboOntology shall have.</param>
+    /// <param name="">The header tags the resulting OboOntology shall have.</param>
+    static member Create(terms, typedefs, headerTags : OboOntologyHeaderTags) =
+        headerTags.ToOboOntology(terms, typedefs)
+
     /// Reads an OBO Ontology containing document header tags, and term and type def stanzas from lines.
     static member fromLines verbose (input : seq<string>) =
 
@@ -565,58 +574,7 @@ type OboOntology =
         onto1.ReturnAllEquivalentTerms(onto2)
 
 
-type OboTermDef = 
-    {
-        Id           : string
-        Name         : string
-        IsTransitive : string
-        IsCyclic     : string
-    }
-
-    static member make id name  isTransitive isCyclic =
-        {Id = id; Name = name; IsTransitive = isTransitive; IsCyclic = isCyclic}
-
-    //parseTermDef
-    static member fromLines (en:Collections.Generic.IEnumerator<string>) id name isTransitive isCyclic =     
-        if en.MoveNext() then                
-            let split = (en.Current |> trimComment).Split([|": "|], System.StringSplitOptions.None)
-            match split.[0] with
-            | "id"            -> OboTermDef.fromLines en (split.[1..] |> String.concat ": ") name isTransitive isCyclic
-            | "name"          -> OboTermDef.fromLines en id (split.[1..] |> String.concat ": ") isTransitive isCyclic 
-            | "is_transitive" -> OboTermDef.fromLines en id name (split.[1..] |> String.concat ": ") isCyclic
-            | "is_cyclic"     -> OboTermDef.fromLines en id name isTransitive (split.[1..] |> String.concat ": ")
-            | ""              -> OboTermDef.make id name isTransitive isCyclic
-            | _               -> OboTermDef.fromLines en id name isTransitive isCyclic
-        else
-            // Maybe check if id is empty
-            OboTermDef.make id name isTransitive isCyclic
-            //failwithf "Unexcpected end of file."
-
-
-/// Functions for parsing and querying an OBO ontology.
-module OboOntology =
-
-    /// Parses OBO Terms [Term] from seq<string>.
-    [<Obsolete("Use static method fromLines instead")>]
-    let parseOboTerms verbose (input:seq<string>)  =
-
-        let en = input.GetEnumerator()
-        let rec loop (en:System.Collections.Generic.IEnumerator<string>) lineNumber =
-            seq {
-                match en.MoveNext() with
-                | true ->
-                    match (en.Current |> trimComment) with
-                    | "[Term]" -> 
-                        let lineNumber,parsedTerm = (OboTerm.fromLines verbose en lineNumber "" "" false [] "" "" [] [] [] [] [] [] [] [] false [] [] [] false "" "")
-                        yield parsedTerm
-                        yield! loop en lineNumber
-                    | _ -> yield! loop en (lineNumber + 1)
-                | false -> ()
-            }
-        loop en 1
-
-
-type OboOntologyHeaderTags = 
+and OboOntologyHeaderTags = 
 
     {
         FormatVersion                                   : string
@@ -749,3 +707,54 @@ type OboOntologyHeaderTags =
     /// <param name="typedefs">The list of OboTypedefs the resulting OboOntology shall have.</param>
     static member toOboOntology terms typedefs (oboOntoloyHeaderTags : OboOntologyHeaderTags) =
         oboOntoloyHeaderTags.ToOboOntology(terms, typedefs)
+
+
+type OboTermDef = 
+    {
+        Id           : string
+        Name         : string
+        IsTransitive : string
+        IsCyclic     : string
+    }
+
+    static member make id name  isTransitive isCyclic =
+        {Id = id; Name = name; IsTransitive = isTransitive; IsCyclic = isCyclic}
+
+    //parseTermDef
+    static member fromLines (en:Collections.Generic.IEnumerator<string>) id name isTransitive isCyclic =     
+        if en.MoveNext() then                
+            let split = (en.Current |> trimComment).Split([|": "|], System.StringSplitOptions.None)
+            match split.[0] with
+            | "id"            -> OboTermDef.fromLines en (split.[1..] |> String.concat ": ") name isTransitive isCyclic
+            | "name"          -> OboTermDef.fromLines en id (split.[1..] |> String.concat ": ") isTransitive isCyclic 
+            | "is_transitive" -> OboTermDef.fromLines en id name (split.[1..] |> String.concat ": ") isCyclic
+            | "is_cyclic"     -> OboTermDef.fromLines en id name isTransitive (split.[1..] |> String.concat ": ")
+            | ""              -> OboTermDef.make id name isTransitive isCyclic
+            | _               -> OboTermDef.fromLines en id name isTransitive isCyclic
+        else
+            // Maybe check if id is empty
+            OboTermDef.make id name isTransitive isCyclic
+            //failwithf "Unexcpected end of file."
+
+
+/// Functions for parsing and querying an OBO ontology.
+module OboOntology =
+
+    /// Parses OBO Terms [Term] from seq<string>.
+    [<Obsolete("Use static method fromLines instead")>]
+    let parseOboTerms verbose (input:seq<string>)  =
+
+        let en = input.GetEnumerator()
+        let rec loop (en:System.Collections.Generic.IEnumerator<string>) lineNumber =
+            seq {
+                match en.MoveNext() with
+                | true ->
+                    match (en.Current |> trimComment) with
+                    | "[Term]" -> 
+                        let lineNumber,parsedTerm = (OboTerm.fromLines verbose en lineNumber "" "" false [] "" "" [] [] [] [] [] [] [] [] false [] [] [] false "" "")
+                        yield parsedTerm
+                        yield! loop en lineNumber
+                    | _ -> yield! loop en (lineNumber + 1)
+                | false -> ()
+            }
+        loop en 1
