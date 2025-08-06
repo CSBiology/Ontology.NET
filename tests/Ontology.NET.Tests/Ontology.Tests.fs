@@ -7,6 +7,10 @@ open FSharpAux
 
 open ControlledVocabulary
 open Ontology.NET
+open Ontology.NET.OBO
+
+
+open type Ontology.NET.RelationType
 
 
 module OntologyTests =
@@ -124,25 +128,25 @@ module OntologyTests =
             ]
 
             testList "GetTargetTermsWithXrefsBy" [
-                 testCase "returns all target terms and their Xrefs correctly, Case: Hund is_a ..." <| fun _ ->
-                     let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Hund", fun _ _ relations -> Set.contains IsA relations) |> Seq.toList
-                     let expected = ["Räuber"; "Höhere Säugetiere"; "Höhere Säuger"; "Eutheria"; "Raubtiere"; "Carnivora"; "Laurasiatheria"]
-                     Expect.sequenceEqual actual expected "Target terms and/or their Xrefs differ"
+                testCase "returns all target terms and their Xrefs correctly, Case: Hund is_a ..." <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Hund", fun _ _ relations -> Set.contains IsA relations) |> Seq.toList
+                    let expected = ["Räuber"; "Höhere Säugetiere"; "Höhere Säuger"; "Eutheria"; "Raubtiere"; "Carnivora"; "Laurasiatheria"]
+                    Expect.sequenceEqual actual expected "Target terms and/or their Xrefs differ"
 
-                 testCase "returns all target terms and their Xrefs correctly, Case: Carnivora Sprache ..." <| fun _ ->
-                     let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Carnivora", fun _ _ relations -> Set.contains (Custom "Sprache") relations) |> Seq.toList
-                     let expected = ["Latein"; "Lateinisch"]
-                     Expect.sequenceEqual actual expected "Target terms and/or their Xrefs differ"
+                testCase "returns all target terms and their Xrefs correctly, Case: Carnivora Sprache ..." <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Carnivora", fun _ _ relations -> Set.contains (Custom "Sprache") relations) |> Seq.toList
+                    let expected = ["Latein"; "Lateinisch"]
+                    Expect.sequenceEqual actual expected "Target terms and/or their Xrefs differ"
 
-                 testCase "returns all target terms and their Xrefs correctly, Case: Lateinisch ist nicht ..." <| fun _ ->
-                     let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Lateinisch", fun _ _ relations -> Set.contains (Custom "ist nicht") relations) |> Seq.toList
-                     let expected = ["Deutsch"]
-                     Expect.sequenceEqual actual expected "Target terms and/or their Xrefs differ"
+                testCase "returns all target terms and their Xrefs correctly, Case: Lateinisch ist nicht ..." <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Lateinisch", fun _ _ relations -> Set.contains (Custom "ist nicht") relations) |> Seq.toList
+                    let expected = ["Deutsch"]
+                    Expect.sequenceEqual actual expected "Target terms and/or their Xrefs differ"
 
-                 testCase "returns all target terms and their Xrefs correctly, Case: term ID has space(s)" <| fun _ ->
-                     let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Eutheria", fun termID _ _ -> String.contains " " termID) |> Seq.toList
-                     let expected = ["Höhere Säugetiere"; "Höhere Säuger"]
-                     Expect.sequenceEqual actual expected "Target terms and/or their Xrefs differ"
+                testCase "returns all target terms and their Xrefs correctly, Case: term ID has space(s)" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto2.GetTargetTermsWithXrefsBy("Eutheria", fun termID _ _ -> String.contains " " termID) |> Seq.toList
+                    let expected = ["Höhere Säugetiere"; "Höhere Säuger"]
+                    Expect.sequenceEqual actual expected "Target terms and/or their Xrefs differ"
             ]
 
             testList "GetTargetTermsWithDepth" [
@@ -334,8 +338,24 @@ module OntologyTests =
 
             testList "toOboOntology" [
                 testCase "returns correct OboOntology" <| fun _ ->
-                    let oboOntoHeaderTags = OBO.OboOntologyHeaderTags.create
-                    let actual = ReferenceObjects.testOnto1.ToOntology()
+
+                    let oboOntoHeaderTags = OboOntologyHeaderTags.Create("1.4", Ontology = "test")
+                    let terms = [
+                        OboTerm.Create("test:01", "Frosch", Xrefs = [{Name = "test:02"; Description = ""; Modifiers = ""}], IsA = ["test:04"])
+                        OboTerm.Create("test:02", "Kröte", IsA = ["test:04"])
+                        OboTerm.Create("test:03", "Quakendes Geschöpf", IsA = ["test:04"], Xrefs = [{Name = "test:02"; Description = ""; Modifiers = ""}])
+                        OboTerm.Create("test:04", "Tier")
+                    ]
+
+                    let prepare terms =
+                        terms
+                        |> List.map (fun ot -> ot.Id, ot.Name, ot.IsA, ot.Relationships)
+
+                    let actual = ReferenceObjects.testOnto1.ToOboOntology(oboOntoHeaderTags)
+                    let expected = OboOntology.Create(terms, [], oboOntoHeaderTags)
+                    Expect.sequenceEqual (prepare actual.Terms) (prepare expected.Terms) "Terms differ"
+                    Expect.equal actual.FormatVersion expected.FormatVersion "format-version differs"
+                    Expect.equal actual.Ontology expected.Ontology "ontology (i.e., ontology name) differs"
             ]
 
         ]
