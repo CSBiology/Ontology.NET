@@ -1,0 +1,32 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Give us a step by step what you did.
+      placeholder: Tell us what happened!
+    validations:
+      required: true
+  - type: textarea
+    id: what-expected
+    attributes:
+      label: What did you expect?
+      description: This field might be optional depending on the bug you encountered.
+      placeholder: Tell us what you wanted to see!
+    validation:
+      required: true
+  - type: textarea
+    id: which-version
+    attributes:
+      label: Version
+      description: On which version did the bug occur?
+      placeholder: E.g. v0.0.0-preview.1
+    validations:
+      required: true
