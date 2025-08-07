@@ -20,7 +20,7 @@ body:
       label: What did you expect?
       description: This field might be optional depending on the bug you encountered.
       placeholder: Tell us what you wanted to see!
-    validation:
+    validations:
       required: true
   - type: textarea
     id: which-version
