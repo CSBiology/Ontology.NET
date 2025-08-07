@@ -83,6 +83,16 @@ build.sh pack
 build.cmd pack
 ```
 
+For prereleases use
+
+```bash
+build.sh packprerelease
+```
+
+```bash
+build.cmd packprerelease
+```
+
 ### Update release notes
 
 ```bash
@@ -97,4 +107,3 @@ where `<arguments>` can be:
 - `semver:<version>` where <version> can be `major`, `minor` or `patch`. The respective version part is raised by +1.
 - `pre:<previewName>` where <previewName> is freetext.
 - `n:<n>` where <n> is the number of commits that (shall) belong to the new release. Default is 30.
-
