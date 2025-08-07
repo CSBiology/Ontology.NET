@@ -1,3 +1,39 @@
+### 0.0.0-preview.2+00d8e91 (Released 2025-8-7)
+* Additions:
+    * [[#00d8e91](https://github.com/CSBiology/Ontology.NET/commit/00d8e91912fffcd0514e37e2a125f87506f32918)] Update package version for CV
+    * [[#e1d7065](https://github.com/CSBiology/Ontology.NET/commit/e1d7065312e735728196a5b2c33fc4ba63af68c7)] Create config.yml
+    * [[#0bf1a47](https://github.com/CSBiology/Ontology.NET/commit/0bf1a470b7c6b7532992d9647c6aaaf5d8914257)] Create feature request issue template
+    * [[#2d9967d](https://github.com/CSBiology/Ontology.NET/commit/2d9967d8e133327f64e2a878a5a7d615dadec607)] Merge pull request #20 from CSBiology/feature-ontology-#6
+    * [[#32bec8a](https://github.com/CSBiology/Ontology.NET/commit/32bec8afa7924a76606478699b36cf2b36bc23f7)] (WIP) Testing unit tests
+    * [[#d81d80a](https://github.com/CSBiology/Ontology.NET/commit/d81d80afc31c537c240551ccdd336d8a31e3f46d)] Add Create method for OboOntologyHeaderTags
+    * [[#e2a4546](https://github.com/CSBiology/Ontology.NET/commit/e2a4546ec51c2dad65d3d020a8b35559ed950eda)] (WIP) Add method to convert Ontology to OboOntology
+    * [[#aa7604f](https://github.com/CSBiology/Ontology.NET/commit/aa7604f7efc62804713f5c3a49c6cdc32ed924ce)] Make OboOntologyHeaderTags a recursive class and give OboOntology a Create method using them
+    * [[#73ca217](https://github.com/CSBiology/Ontology.NET/commit/73ca21744c3ea157c67a93d1ae27cfdfef3ecdb2)] Add functions to create OboOntologies from OboHeaderTags
+    * [[#c50e4a5](https://github.com/CSBiology/Ontology.NET/commit/c50e4a56c0f6e55793da02815c23d933ed35638c)] Add functions & methods for RelationType
+    * [[#0b5c987](https://github.com/CSBiology/Ontology.NET/commit/0b5c987c4a75a7aa003915d15b742a86f124fcca)] (WIP) Add functionality for parsing to OboOntology
+    * [[#437627c](https://github.com/CSBiology/Ontology.NET/commit/437627c917a1e6bdb624257c98165e018a6ae029)] Add .HasRelation functionality
+    * [[#a2a6887](https://github.com/CSBiology/Ontology.NET/commit/a2a6887b8c3e6d66080dc09ab0e571ca5e9d92f2)] Add .HasRelations method(s)
+    * [[#1be80c9](https://github.com/CSBiology/Ontology.NET/commit/1be80c9ef450c1e6d9721e39df087703424d24f6)] Add .TryGetRelations
+    * [[#220d52f](https://github.com/CSBiology/Ontology.NET/commit/220d52faf99acb1f8dbb4afe8a62476b0f925850)] Add .ContainsTerm functionality
+    * [[#73a0caf](https://github.com/CSBiology/Ontology.NET/commit/73a0caf325cb4279501a36c38291c3ae73856068)] Merge pull request #17 from CSBiology/feature-cicd-#13
+    * [[#3ef7023](https://github.com/CSBiology/Ontology.NET/commit/3ef7023702c4e0721d64459f9b479587e654911f)] Correct folder path to match Unix's case sensitivity
+    * [[#2a81bf4](https://github.com/CSBiology/Ontology.NET/commit/2a81bf4cb40a376757d240c5f2d2fa3feb4609ea)] Correct folder name in project file display
+    * Initial set up for RELEASE_Notes.md
+* Deletions:
+    * [[#1ba7d6f](https://github.com/CSBiology/Ontology.NET/commit/1ba7d6f9f53dea1747e1e69e305fa2fa6fa78bd3)] Delete useless cache clearing
+* Bugfixes:
+    * [[#160f723](https://github.com/CSBiology/Ontology.NET/commit/160f723012fd14494374e201f9a7301f01a3b09b)] Fix typo
+    * [[#454c1ac](https://github.com/CSBiology/Ontology.NET/commit/454c1ac41ff7a9ba804b2d69ff8e9cd13d2803bb)] Fix typo
+    * [[#be4288e](https://github.com/CSBiology/Ontology.NET/commit/be4288e0a860f72b857bf123a673b1dbfa3166cb)] Fix critical typo resulting into bug
+    * [[#5db94ba](https://github.com/CSBiology/Ontology.NET/commit/5db94ba07f6b8c4327a8d2acb6e71ed5219d1df5)] Create bug_report.yml
+    * [[#407c60e](https://github.com/CSBiology/Ontology.NET/commit/407c60eaa2f304f4d147d3e5d46b68d8a2aad47f)] Fix wrong issue templates folder name
+    * [[#0e4fe27](https://github.com/CSBiology/Ontology.NET/commit/0e4fe27aee745a9b6200335e034fe3b5232ca091)] Fix bug in ToOboOntology method
+    * [[#f92a686](https://github.com/CSBiology/Ontology.NET/commit/f92a6862bc994a36fde09fe844578d583d2b69f5)] Add constructionRelationship, fix some bugs due to new record
+    * [[#a7d439d](https://github.com/CSBiology/Ontology.NET/commit/a7d439d90a5796814290a25bb8169e9e02c6b9aa)] Add .fromTriplets + fix critical bug in OntologyHelperFunctions
+    * [[#5e2ad1f](https://github.com/CSBiology/Ontology.NET/commit/5e2ad1fd059614a8b504b1a4e7ecde64b24f79a7)] Revert "Add diagnostic print line to fix unix CI error"
+    * [[#8a3d0ba](https://github.com/CSBiology/Ontology.NET/commit/8a3d0ba2ba8fd4a3865e3b32a792cc31ff401733)] Add diagnostic print line to fix unix CI error
+    * [[#77e93d0](https://github.com/CSBiology/Ontology.NET/commit/77e93d09f97e105ff387265f2e8b442593892510)] Apply CI fix to Windows part
+
 ### 0.0.0-preview.1+983f2a6 (Released 2025-7-25)
 * Additions:
     * [[#2feba3d](https://github.com/CSBiology/Ontology.NET/commit/2feba3d3ff76d88c46b4bfb685518044060ef5f3)] Initial commit
@@ -105,8 +141,4 @@
     * [[#abba662](https://github.com/CSBiology/Ontology.NET/commit/abba662ebb8263818c853affcbc3478f0bc29632)] Fix `Path.Combine` "bug"
     * [[#d6adf62](https://github.com/CSBiology/Ontology.NET/commit/d6adf6211e0da8fe14f16a2eb1231cfbf24a0493)] Fix typos
     * [[#5da18f1](https://github.com/CSBiology/Ontology.NET/commit/5da18f1badd6695db93cc1b8efd043821651c4fa)] Fix mistake in test project path
-
-### 0.0.0 (Released 2025-6-3)
-* Additions:
-    * Initial set up for RELEASE_Notes.md
 
