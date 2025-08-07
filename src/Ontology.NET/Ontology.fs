@@ -151,7 +151,9 @@ type Ontology() =
 
         let rec outerLoop (input : (string * RelationType Set) list) rs ias xs =
             match input with
-            | (tt,rts) :: t -> innerLoop tt (Seq.toList rts) rs ias xs
+            | (tt,rts) :: t -> 
+                let newRs, newIas, newXs = innerLoop tt (Seq.toList rts) rs ias xs
+                outerLoop t newRs newIas newXs
             | [] -> rs, ias, xs
 
         let terms = 
