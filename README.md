@@ -22,7 +22,7 @@ Every contribution is welcome, such as:
 - Documentation improvement requests
 - Typo fixes
 - Performance discussions and improvements
-- New alogithm implementations
+- New algorithm implementations
 - etc.
 
 **Please start by opening an issue**.
@@ -38,7 +38,7 @@ Please refrain from unrealistic expectations from maintainers.
 
 ### General
 
-Ontology.NET repositories usually folllow this structure:
+The Ontology.NET repository follows this structure:
 
 ```
 root
@@ -54,14 +54,14 @@ root
 
 - <project name>.sln is the root solution file.
 - `build` contains a [FAKE](https://fake.build/) build project with targets for building, testing and packaging the project.
-- `build/sh` and `build.cmd` in the root are shorthand scripts to execute the buildproject.
+- `build/sh` and `build.cmd` in the root are shorthand scripts to execute the build project.
 - `docs` contains the documentation in form of literate scripts and notebooks. 
 - `src` contains folders with the source code of the project(s).
 - `tests` contains folders with test projects.
 
 ### Build
 
-just call `build.sh` or `build.cmd` depending on your OS.
+Just call `build.sh` or `build.cmd` depending on your OS.
 
 ### Test
 
@@ -82,3 +82,4 @@ build.sh pack
 ```bash
 build.cmd pack
 ```
+
