@@ -11,6 +11,37 @@ type RelationType =
     | Term of CvTerm
     | Custom of string
 
+    with
+        /// <summary>
+        /// Creates a RelationType from a given string.
+        /// </summary>
+        /// <param name="str">The string that is used to create a RelationType.</param>
+        static member fromString (str : string) =
+            match str.ToLower() with
+            | "is_a"
+            | "is a"
+            | "isa" -> IsA
+            | "xref"
+            | "x_ref"
+            | "x ref" -> Xref
+            | _ -> Custom str
+
+        /// <summary>
+        /// Returns the RelationType as a string.
+        /// </summary>
+        override this.ToString() : string = 
+            match this with
+            | IsA       -> "is_a"
+            | Xref      -> "xref"
+            | Custom r  -> r
+            | Term cvt  -> cvt.Name
+
+        /// <summary>
+        /// Returns a RelationType as a string.
+        /// </summary>
+        static member toString (rt : RelationType) =
+            rt.ToString()
+
 
 /// Model for a generic ontological relation. Consists of fields RelationType that inhabits the type of the relation, and Target for the targeted CvTerm of the relation.
 type OntologyRelation = {

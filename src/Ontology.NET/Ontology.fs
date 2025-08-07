@@ -8,6 +8,7 @@ open Graphoscope
 
 open GraphoscopeAux
 open Ontology.NET.OBO
+open type RelationType
 
 
 module internal OntologyGraphHelpers =
@@ -15,23 +16,36 @@ module internal OntologyGraphHelpers =
     let setOrAddEdgeObo sourceTerm searchedTermKey (relationType : RelationType) oboOnto graph =
         let cvtTarget = OboOntology.getOrCreateTerm searchedTermKey oboOnto |> OboTerm.toCvTerm
         if FGraph.containsNode cvtTarget.Accession graph then
-            match FGraph.tryFindEdge sourceTerm.Accession cvtTarget.Accession graph with
-            | Some (nk1,nk2,alreadyExistingEdge) -> 
+            if FGraph.containsEdge sourceTerm.Accession cvtTarget.Accession graph then
+                let _, _, alreadyExistingEdge = FGraph.findEdge sourceTerm.Accession cvtTarget.Accession graph
                 FGraph.setEdgeData sourceTerm.Accession cvtTarget.Accession (Set.add relationType alreadyExistingEdge) graph
-            | None -> 
+            else
                 FGraph.addEdge sourceTerm.Accession cvtTarget.Accession (Set (List.singleton relationType)) graph
             |> ignore
+            // TO DO: Replace this with the code below as soon as the `FGraph.tryFindEdge` bug is fixed and a new version with the fix is released.
+            //match FGraph.tryFindEdge sourceTerm.Accession cvtTarget.Accession graph with
+            //| Some (nk1,nk2,alreadyExistingEdge) -> 
+            //    FGraph.setEdgeData sourceTerm.Accession cvtTarget.Accession (Set.add relationType alreadyExistingEdge) graph
+            //| None -> 
+            //    FGraph.addEdge sourceTerm.Accession cvtTarget.Accession (Set (List.singleton relationType)) graph
+            //|> ignore
         else 
             let missingTargetTerm = CvTerm.create(searchedTermKey, "<missing>", "<missing>")
             FGraph.addElement sourceTerm.Accession sourceTerm missingTargetTerm.Accession missingTargetTerm (Set (List.singleton relationType)) graph |> ignore
 
     // CAUTION: fails if one of the terms doesn't exist in the given Ontology!
-    let setOrAddEdge sourceTerm targetTerm (relation : RelationType) onto =
-        match FGraph.tryFindEdge sourceTerm targetTerm onto with
-        | Some (_, _, edgeData) ->
-            FGraph.setEdgeData sourceTerm targetTerm (Set.add relation edgeData) onto
-        | None -> 
-            FGraph.addEdge sourceTerm targetTerm (Set.singleton relation) onto
+    let setOrAddEdge sourceTermId targetTermId (relation : RelationType) onto =
+        if FGraph.containsEdge sourceTermId targetTermId onto then
+            let _, _, currRel = FGraph.findEdge sourceTermId targetTermId onto
+            FGraph.setEdgeData sourceTermId targetTermId (Set.add relation currRel) onto
+        else
+            FGraph.addEdge sourceTermId targetTermId (Set.singleton relation) onto
+        // TO DO: Replace this with the code below as soon as the `FGraph.tryFindEdge` bug is fixed and a new version with the fix is released.
+        //match FGraph.tryFindEdge sourceTerm targetTerm onto with
+        //| Some (_, _, edgeData) ->
+        //    FGraph.setEdgeData sourceTerm targetTerm (Set.add relation edgeData) onto
+        //| None -> 
+        //    FGraph.addEdge sourceTerm targetTerm (Set.singleton relation) onto
 
 
 open OntologyGraphHelpers
@@ -46,7 +60,7 @@ type Ontology() =
     // parsing functionality:
 
     /// <summary>
-    /// Takes a given OboOntology and transforms it into an Ontology, with the term IDs as node keys, the terms as CvTerms as node data and the relations as edges.
+    /// Takes a given OboOntology and returns the corresponding Ontology, with the term IDs as node keys, the terms as CvTerms as node data and the relations as edges.
     /// </summary>
     /// <remarks>If a relation points to a term that is not present in the given OboOntology, initializes them as new CvTerms but with name and ref = "&lt;missing&gt;".</remarks>
     static member fromOboOntology (oboOnto : OboOntology) =
@@ -117,8 +131,85 @@ type Ontology() =
         |> Seq.map Ontology.fromOboOntology
         |> Ontology.mergeAll
 
+    /// <summary>
+    /// Creates an OboOntology from the Ontology. Incorporates the given header tags if present.
+    /// </summary>
+    /// <param name="headerTags">Optional. The header tags of the resulting OboOntology. Default is empty.</param>
+    member this.ToOboOntology(?headerTags) =
+
+        let ht = Option.defaultValue (OboOntologyHeaderTags.createDefault ()) headerTags
+
+        let rec innerLoop (tt : string) (rts : RelationType list) rs ias xs =
+            match rts with
+            | h :: t ->
+                match h with
+                | IsA ->        innerLoop tt t rs (tt :: ias) xs
+                | Xref ->       innerLoop tt t rs ias (tt :: xs)
+                | Term cvt ->   innerLoop tt t ((tt,cvt.Name) :: rs) ias xs
+                | Custom c ->   innerLoop tt t ((tt, c) :: rs) ias xs
+            | [] -> rs, ias, xs
+
+        let rec outerLoop (input : (string * RelationType Set) list) rs ias xs =
+            match input with
+            | (tt,rts) :: t -> 
+                let newRs, newIas, newXs = innerLoop tt (Seq.toList rts) rs ias xs
+                outerLoop t newRs newIas newXs
+            | [] -> rs, ias, xs
+
+        let terms = 
+            this.GetTerms() 
+            |> Seq.map snd
+            |> Seq.map (
+                fun cvt -> 
+                    let relations = this.GetTargetTermRelations(cvt.Accession)
+                    let relationshipsRaw, isAs, xrefsRaw = outerLoop (List.ofSeq relations) [] [] []
+                    let relationshipsProcessed = relationshipsRaw |> List.map (fun (tt,rsn) -> OboTerm.constructRelationship tt rsn)
+                    let xrefsProcessed = xrefsRaw |> List.map DBXref.ofString
+                    OboTerm.Create(
+                        cvt.Accession, 
+                        Name = cvt.Name,
+                        Relationships = relationshipsProcessed,
+                        IsA = isAs,
+                        Xrefs = xrefsProcessed
+                    )
+            )
+
+        OboOntology.Create(Seq.toList terms, [], ht)
+
+    /// <summary>
+    /// Creates an OboOntology from the given Ontology. Incorporates the given header tags if present.
+    /// </summary>
+    /// <param name="headerTags">Optional. The header tags of the resulting OboOntology. Default is empty.</param>
+    /// <param name="onto">The Ontology that shall be used as the basis of the resulting OboOntology.</param>
+    static member toOboOntology headerTags (onto : Ontology) =
+        onto.ToOboOntology(headerTags)
+
+    /// <summary>
+    /// Takes a sequence of triplets and returns the corresponding Ontology.
+    /// </summary>
+    /// <param name="triplets">The triplets in the form of source term * relation * target term that serve as the informational basis for the ontology that gets created out of them.</param>
+    static member fromTriplets (triplets : (CvTerm * RelationType * CvTerm) seq) = 
+        let onto = Ontology()
+
+        triplets
+        |> Seq.iter (
+            fun (term1,rel,term2) ->
+                onto.AddTerm(term1) |> ignore
+                onto.AddTerm(term2) |> ignore
+                onto.AddRelation(term1.Accession, term2.Accession, rel) |> ignore
+        )
+
+        onto
+
 
     // basic functionality:
+
+    /// <summary>
+    /// Checks if a term exists under the given ID.
+    /// </summary>
+    /// <param name="termId">The ID of the term whose presence in the Ontology shall be checked.</param>
+    member this.ContainsTerm(termId) =
+        FGraph.containsNode termId this
 
     /// <summary>
     /// Adds a CvTerm to the Ontology.
@@ -166,72 +257,108 @@ type Ontology() =
     /// <summary>
     /// Removes the given term from the Ontology. Also removes all of its relations.
     /// </summary>
-    /// <param name="term">The ID of the term that gets removed.</param>
-    member this.RemoveTerm(term) =
-        FGraph.removeNode term this :?> Ontology
+    /// <param name="termId">The ID of the term that gets removed.</param>
+    member this.RemoveTerm(termId) =
+        FGraph.removeNode termId this :?> Ontology
+
+    /// <summary>
+    /// Checks if at least 1 relation from source term to target term exists. 
+    /// </summary>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
+    /// <remarks>Does not check if a relation exists from target to source term.</remarks>
+    member this.HasRelations(sourceTermId, targetTermId) =
+        FGraph.containsEdge sourceTermId targetTermId this
+
+    /// <summary>
+    /// Checks if the given relation from source term to target term exists.
+    /// </summary>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
+    /// <param name="relation">The relation whose presence shall be checked.</param>
+    /// <remarks>Does not check if the relation exists from target to source term.</remarks>
+    member this.HasRelation(sourceTermId, targetTermId, relation) =
+        match this.TryGetRelations(sourceTermId, targetTermId) with
+        | None -> 
+            false
+        | Some r ->
+            Set.contains relation r
 
     /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
     /// </summary>
-    /// <param name="sourceTerm">The ID of the term from which the relation originates.</param>
-    /// <param name="targetTerm">The ID of the term that is related to the source term.</param>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
     /// <param name="relation">The relation between both terms.</param>
     /// <exception cref="System.ArgumentException">Thrown when source term or target term are not presen in the Ontology.</exception>
-    member this.AddRelation(sourceTerm, targetTerm, relation) =
-        match FGraph.containsNode sourceTerm this, FGraph.containsNode targetTerm this with
+    member this.AddRelation(sourceTermId, targetTermId, relation) =
+        match FGraph.containsNode sourceTermId this, FGraph.containsNode targetTermId this with
         | true, true -> 
-            setOrAddEdge sourceTerm targetTerm relation this :?> Ontology
+            setOrAddEdge sourceTermId targetTermId relation this :?> Ontology
         | false, true ->
-            raise (System.ArgumentException($"source term {sourceTerm} does not exist in the Ontology.", sourceTerm))
+            raise (System.ArgumentException($"source term {sourceTermId} does not exist in the Ontology.", sourceTermId))
         | true, false ->
-            raise (System.ArgumentException($"target term {targetTerm} does not exist in the Ontology.", targetTerm))
+            raise (System.ArgumentException($"target term {targetTermId} does not exist in the Ontology.", targetTermId))
         | false, false ->
-            raise (System.ArgumentException($"terms {sourceTerm} and {targetTerm} do not exist in the Ontology."))
+            raise (System.ArgumentException($"terms {sourceTermId} and {targetTermId} do not exist in the Ontology."))
 
     /// <summary>
     /// Returns the set of Relations from source to target term.
     /// </summary>
-    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
-    /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
+    /// <param name="sourceTermId">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTermId">ID of the target term (where the relation points to).</param>
     /// <exception cref="System.ArgumentException">Thrown when there is no relation from source to target term in the Ontology.</exception>
-    member this.GetRelation(sourceTerm, targetTerm) =
-        if FGraph.containsEdge sourceTerm targetTerm this then
-            FGraph.findEdge sourceTerm targetTerm this
+    member this.GetRelations(sourceTermId, targetTermId) =
+        if FGraph.containsEdge sourceTermId targetTermId this then
+            FGraph.findEdge sourceTermId targetTermId this
             |> fun (_,_,e) -> e
-        else raise (System.ArgumentException($"There is no relation from source terms {sourceTerm} to target term {targetTerm} in the Ontology."))
+        else raise (System.ArgumentException($"There is no relation from source terms {sourceTermId} to target term {targetTermId} in the Ontology."))
         // TO DO: Replace this with the code below as soon as the `FGraph.tryFindEdge` bug is fixed and a new version with the fix is released.
-        //match FGraph.tryFindEdge sourceTerm targetTerm this with
+        //match FGraph.tryFindEdge sourceTermId targetTermId this with
         //| Some (_,_,e) -> e
-        //| None -> raise (System.ArgumentException($"There is no relation from source terms {sourceTerm} to target term {targetTerm} in the Ontology."))
+        //| None -> raise (System.ArgumentException($"There is no relation from source terms {sourceTermId} to target term {targetTermId} in the Ontology."))
+
+    /// <summary>
+    /// Returns the set of Relations from source to target term if they exist. Else returns None.
+    /// </summary>
+    /// <param name="sourceTermId">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTermId">ID of the target term (where the relation points to).</param>
+    member this.TryGetRelations(sourceTermId, targetTermId) =
+        if FGraph.containsEdge sourceTermId targetTermId this then
+            Some (FGraph.findEdge sourceTermId targetTermId this |> fun (_,_,e) -> e)
+        else None
+        // TO DO: Replace this with the code below as soon as the `FGraph.tryFindEdge` bug is fixed and a new version with the fix is released.
+        //FGraph.tryFindEdge sourceTermId targetTermId this
+        //|> Option.map (fun (_,_,e) -> e)
 
     /// <summary>
     /// Returns all relations of the Ontology as a sequence of source term ID * target term ID * relations.
     /// </summary>
-    member this.GetRelations() =
+    member this.GetAllRelations() =
         FGraph.toEdgeSeq this
 
     /// <summary>
     /// Removes all relations from given source to target term. Relations directed vice versa (from target to source term) are unaffected.
     /// </summary>
-    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
+    /// <param name="sourceTermId">ID of the source term (where the relation originates).</param>
     /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
-    member this.RemoveRelations(sourceTerm, targetTerm) =
-        FGraph.removeEdge sourceTerm targetTerm this :?> Ontology
+    member this.RemoveRelations(sourceTermId, targetTermId) =
+        FGraph.removeEdge sourceTermId targetTermId this :?> Ontology
 
     /// <summary>
     /// Removes the given relation from given source to target term. Relations directed vice versa (from target to source term) are unaffected.
     /// </summary>
-    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
+    /// <param name="sourceTermId">ID of the source term (where the relation originates).</param>
     /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
     /// <param name="relation">The relation to be removed from the set of relations from source to target term.</param>
     /// <exception cref="System.ArgumentException">Thrown when no relation from source term to target term exists.</expection>
-    member this.RemoveRelation(sourceTerm, targetTerm, relation) =
+    member this.RemoveRelation(sourceTermId, targetTermId, relation) =
         try 
-            FGraph.findEdge sourceTerm targetTerm this
+            FGraph.findEdge sourceTermId targetTermId this
             |> fun (_,_,e) ->
-                FGraph.setEdgeData sourceTerm targetTerm (Set.remove relation e) this :?> Ontology
+                FGraph.setEdgeData sourceTermId targetTermId (Set.remove relation e) this :?> Ontology
         with _ ->
-            raise (System.ArgumentException($"no relation from source term {sourceTerm} to target term {targetTerm}."))
+            raise (System.ArgumentException($"no relation from source term {sourceTermId} to target term {targetTermId}."))
         // TO DO: Replace this with the code below as soon as the `FGraph.tryFindEdge` bug is fixed and a new version with the fix is released.
         //match FGraph.tryFindEdge sourceTerm targetTerm this with
         //| Some (_,_,e) ->
@@ -278,10 +405,10 @@ type Ontology() =
     /// <summary>
     /// Returns the target relations of the given term as (target term ID * relations) sequence.
     /// </summary>
-    /// <param name="termID">The ID of the term whose target relations shall be returned.</param>
+    /// <param name="termId">The ID of the term whose target relations shall be returned.</param>
     /// <remarks>Target relations to the given term look like this: "given term -> target term"</remarks>
-    member this.GetTargetTermRelations(termID) =
-        this[termID]
+    member this.GetTargetTermRelations(termId) =
+        this[termId]
         |> fun (_,_,s) -> 
             s
             |> Seq.map (fun e -> e.Key, e.Value)
@@ -780,7 +907,7 @@ type Ontology() =
     /// <param name="onto">The Ontology that gets merged into this one.</param>
     member this.MergeWith(onto : Ontology) =
         let newTerms = onto.GetTerms()
-        let newRelations = onto.GetRelations()
+        let newRelations = onto.GetAllRelations()
         newTerms
         |> Seq.iter (
             fun (termId,cvTerm) ->
@@ -826,6 +953,14 @@ type Ontology() =
 
 
     // accompanying static methods (to existing instance methods):
+
+    /// <summary>
+    /// Checks if a term exists under the given ID.
+    /// </summary>
+    /// <param name="termId">The ID of the term whose presence in the Ontology shall be checked.</param>
+    /// <param name="onto">The Ontology where the presence of the term shall be checked.</param>
+    static member containsTerm termId (onto : Ontology) =
+        onto.ContainsTerm(termId)
 
     /// <summary>
     /// Adds a CvTerm to the Ontology.
@@ -876,49 +1011,79 @@ type Ontology() =
         onto.RemoveTerm(term)
 
     /// <summary>
+    /// Checks if at least 1 relation from source term to target term exists.
+    /// </summary>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
+    /// <param name="onto">The Ontology in which the relation shall be searched for.</param>
+    /// <remarks>Does not check if a relation exists from target to source term.</remarks>
+    static member hasRelations sourceTermId targetTermId (onto : Ontology) =
+        onto.HasRelations(sourceTermId, targetTermId)
+
+    /// <summary>
+    /// Checks if the given relation from source term to target term exists.
+    /// </summary>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
+    /// <param name="relation">The relation whose presence shall be checked.</param>
+    /// <param name="onto">The Ontology in which the relation shall be searched for.</param>
+    /// <remarks>Does not check if the relation exists from target to source term.</remarks>
+    static member hasRelation sourceTermId targetTermId relation (onto : Ontology) =
+        onto.HasRelation(sourceTermId, targetTermId, relation)
+
+    /// <summary>
     /// Adds a relation of source term to target term to the Ontology.
     /// </summary>
-    /// <param name="sourceTerm">The ID of the term from which the relation originates.</param>
-    /// <param name="targetTerm">The ID of the term that is related to the source term.</param>
+    /// <param name="sourceTermId">The ID of the term from which the relation originates.</param>
+    /// <param name="targetTermId">The ID of the term that is related to the source term.</param>
     /// <param name="relation">The relation between both terms.</param>
     /// <param name="onto">The Ontology in which the relation shall be added.</param>
-    static member addRelation sourceTerm targetTerm relation (onto : Ontology) =
-        onto.AddRelation(sourceTerm, targetTerm, relation)
+    static member addRelation sourceTermId targetTermId relation (onto : Ontology) =
+        onto.AddRelation(sourceTermId, targetTermId, relation)
 
     /// <summary>
     /// Returns the set of Relations from source to target term.
     /// </summary>
-    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
-    /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
+    /// <param name="sourceTermId">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTermId">ID of the target term (where the relation points to).</param>
     /// <param name="onto">The Ontology in which to look for the relation.</param>
-    static member getRelation sourceTerm targetTerm (onto : Ontology) =
-        onto.GetRelation(sourceTerm, targetTerm)
+    static member getRelations sourceTermId targetTermId (onto : Ontology) =
+        onto.GetRelations(sourceTermId, targetTermId)
+
+    /// <summary>
+    /// Returns the set of Relations from source to target term if they exist. Else returns None.
+    /// </summary>
+    /// <param name="sourceTermId">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTermId">ID of the target term (where the relation points to).</param>
+    /// <param name="onto">The Ontology in which to look for the relation.</param>
+    static member tryGetRelations sourceTermId targetTermId (onto : Ontology) =
+        onto.TryGetRelations(sourceTermId, targetTermId)
 
     /// <summary>
     /// Returns all relations of the Ontology as a sequence of source term ID * target term ID * relations.
     /// </summary>
     /// <param name="onto">The Ontology in which to look for the relation.</param>
-    static member getRelations (onto : Ontology) =
-        onto.GetRelations()
+    static member getAllRelations (onto : Ontology) =
+        onto.GetAllRelations()
 
     /// <summary>
     /// Removes all relations from given source to target term. Relations directed vice versa (from target to source term) are unaffected.
     /// </summary>
-    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
-    /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
+    /// <param name="sourceTermId">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTermId">ID of the target term (where the relation points to).</param>
     /// <param name="onto">The Ontology from which the relations shall be removed.</param>
-    static member removeRelations sourceTerm targetTerm (onto : Ontology) =
-        onto.RemoveRelations(sourceTerm, targetTerm)
+    static member removeRelations sourceTermId targetTermId (onto : Ontology) =
+        onto.RemoveRelations(sourceTermId, targetTermId)
 
     /// <summary>
     /// Removes the given relation from given source to target term. Relations directed vice versa (from target to source term) are unaffected.
     /// </summary>
-    /// <param name="sourceTerm">ID of the source term (where the relation originates).</param>
-    /// <param name="targetTerm">ID of the target term (where the relation points to).</param>
+    /// <param name="sourceTermId">ID of the source term (where the relation originates).</param>
+    /// <param name="targetTermId">ID of the target term (where the relation points to).</param>
     /// <param name="relation">The relation to be removed from the set of relations from source to target term.</param>
     /// <param name="onto">The Ontology from which the relation shall be removed.</param>
-    static member removeRelation sourceTerm targetTerm relation (onto : Ontology) =
-        onto.RemoveRelation(sourceTerm, targetTerm, relation)
+    static member removeRelation sourceTermId targetTermId relation (onto : Ontology) =
+        onto.RemoveRelation(sourceTermId, targetTermId, relation)
 
     /// <summary>
     /// Returns the term IDs of all terms that have an Xref relation to the given term with the given Ontology.

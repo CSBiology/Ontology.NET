@@ -1,10 +1,11 @@
 ﻿namespace Ontology.NET.OBO
 
 
+open System
+open System.Text.RegularExpressions
+
 open DBXref
 open TermSynonym
-
-open System
 
 open ControlledVocabulary
 open FSharpAux
@@ -517,9 +518,20 @@ type OboTerm =
 
     /// Takes a relationship and returns a tuple consisting of the name of the relationship and the ID of the OboTerm it matches.
     static member deconstructRelationship relationship =
-        let pattern = System.Text.RegularExpressions.Regex @"^(?<relName>.+?) (?<id>[^ ]+:\d+)(?: .*)?$"
+        let pattern = Regex @"^(?<relName>.+?) (?<id>[^ ]+:\d+)(?: .*)?$"
         let regexMatch = pattern.Match relationship
         regexMatch.Groups["relName"].Value, regexMatch.Groups["id"].Value
+
+    /// <summary>
+    /// Takes the ID of a target term and the name of a relationship and constructs the relationship from them.
+    /// </summary>
+    /// <param name="targetTermId">The ID of the term that the relationship targets.</param>
+    /// <param name="relationshipName">The name of the relationship, e.g. "part_of".</param>
+    static member constructRelationship targetTermId relationshipName =
+        let whiteSpacePattern = Regex(@"\s")
+        if whiteSpacePattern.Match(relationshipName).Success then
+            raise (System.ArgumentException($"relationshipName {relationshipName} must not contain white spaces.", relationshipName))
+        $"{targetTermId} {relationshipName}"
 
     /// Returns the OboTerm's relationships as a triple consisting of the term's ID, the name of the relationship, and the related term's ID.
     member this.GetRelatedTermIds() =
