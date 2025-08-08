@@ -104,6 +104,7 @@ build.cmd releasenotes <arguments>
 ```
 
 where `<arguments>` can be:
-- `semver:<version>` where <version> can be `major`, `minor` or `patch`. The respective version part is raised by +1.
-- `pre:<previewName>` where <previewName> is freetext.
-- `n:<n>` where <n> is the number of commits that (shall) belong to the new release. Default is 30.
+- `semver:<version>` where `<version>` can be `major`, `minor` or `patch`. The respective version part is raised by +1.
+- `pre:<previewName>` where `<previewName>` is freetext.
+- `n:<n>` where `<n>` is the number of commits that (shall) belong to the new release. Default is 30.
+
