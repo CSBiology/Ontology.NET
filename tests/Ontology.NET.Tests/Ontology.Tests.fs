@@ -358,4 +358,37 @@ module OntologyTests =
                     Expect.equal actual.Ontology expected.Ontology "ontology (i.e., ontology name) differs"
             ]
 
+            testList "ToTriplets" [
+                testCase "returns correct triplets" <| fun _ ->
+                    let actual = ReferenceObjects.testOnto1.ToTriplets() |> Seq.toList
+                    let expected = [
+                       ({ Accession = "test:01"
+                          Name = "Frosch"
+                          RefUri = "test" }, Xref, { Accession = "test:02"
+                                                     Name = "Kröte"
+                                                     RefUri = "test" });
+                       ({ Accession = "test:01"
+                          Name = "Frosch"
+                          RefUri = "test" }, IsA, { Accession = "test:04"
+                                                    Name = "Tier"
+                                                    RefUri = "test" });
+                       ({ Accession = "test:02"
+                          Name = "Kröte"
+                          RefUri = "test" }, IsA, { Accession = "test:04"
+                                                    Name = "Tier"
+                                                    RefUri = "test" });
+                       ({ Accession = "test:03"
+                          Name = "Quakendes Geschöpf"
+                          RefUri = "test" }, Xref, { Accession = "test:02"
+                                                     Name = "Kröte"
+                                                     RefUri = "test" });
+                       ({ Accession = "test:03"
+                          Name = "Quakendes Geschöpf"
+                          RefUri = "test" }, IsA, { Accession = "test:04"
+                                                    Name = "Tier"
+                                                    RefUri = "test" })
+                    ]
+                    Expect.sequenceEqual actual expected "Triplets differ"
+            ]
+
         ]

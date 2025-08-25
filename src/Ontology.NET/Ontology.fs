@@ -201,6 +201,20 @@ type Ontology() =
 
         onto
 
+    /// <summary>
+    /// Returns the Ontology as a collection of Triplets.
+    /// </summary>
+    /// <returns>A collection of Triplets in the form of SourceTerm * Relation * TargetTerm.</returns>
+    member this.ToTriplets() =
+        FGraph.toSeq this
+        |> Seq.collect (
+            fun (nk1,nd1,nk2,nd2,es) -> 
+                es
+                |> Seq.map (
+                    fun e -> nd1, e, nd2
+                )
+        )
+
 
     // basic functionality:
 
@@ -1307,3 +1321,10 @@ type Ontology() =
     /// <remarks>A source relation is an incoming relation. E.g. "Term A -> Term B", Term A is the source-related term to Term B. If "->" is an is_a relation, Term A is the subclass of Term B.</remarks>
     static member getSubClassesWithDepthWithXrefsTransitively termID depth (onto : Ontology) =
         onto.GetSubClassesWithDepthWithXrefsTransitively(termID, depth)
+
+    /// <summary>
+    /// Returns the given Ontology as a collection of Triplets.
+    /// </summary>
+    /// <returns>A collection of Triplets in the form of SourceTerm * Relation * TargetTerm.</returns>
+    static member toTriplets (onto : Ontology) =
+        onto.ToTriplets()
