@@ -62,6 +62,7 @@ type Ontology() =
     /// <summary>
     /// Takes a given OboOntology and returns the corresponding Ontology, with the term IDs as node keys, the terms as CvTerms as node data and the relations as edges.
     /// </summary>
+    /// <param name="oboOnto">The OboOntology that serves as the basis for the respective Ontology.</param>
     /// <remarks>If a relation points to a term that is not present in the given OboOntology, initializes them as new CvTerms but with name and ref = "&lt;missing&gt;".</remarks>
     static member fromOboOntology (oboOnto : OboOntology) =
 
@@ -1325,6 +1326,7 @@ type Ontology() =
     /// <summary>
     /// Returns the given Ontology as a collection of Triplets.
     /// </summary>
+    /// <param name="onto">The Ontology that serves as the informational basis for the Triplet collection.</param>
     /// <returns>A collection of Triplets in the form of SourceTerm * Relation * TargetTerm.</returns>
     static member toTriplets (onto : Ontology) =
         onto.ToTriplets()
