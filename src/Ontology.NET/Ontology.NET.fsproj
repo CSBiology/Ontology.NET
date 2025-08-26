@@ -32,9 +32,8 @@
     <Compile Include="OBO\OboProvider.fs" />
     <Compile Include="OntologyRelation.fs" />
     <Compile Include="Ontology.fs" />
+    <Compile Include="ExtensionMethods.fs" />
   </ItemGroup>
-
-  <ItemGroup />
 
   <PropertyGroup>
     <Authors>Heinrich Lukas Weil, Oliver Maus, F# open source contributors</Authors>
