@@ -33,6 +33,7 @@
     <Compile Include="OBO\OboOntology.fs" />
     <Compile Include="OBO\OboProvider.fs" />
     <Compile Include="SSSOM\SssomMapping.fs" />
+    <Compile Include="SSSOM\SssomMappingSet.fs" />
     <Compile Include="OntologyRelation.fs" />
     <Compile Include="Ontology.fs" />
     <Compile Include="ExtensionMethods.fs" />
